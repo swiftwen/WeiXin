@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aitravelba.orm.yihui.ArrearDebtMapper" >
+  <resultMap id="BaseResultMap" type="com.aitravelba.pojo.yihui.ArrearDebt" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="task_code" property="taskCode" jdbcType="VARCHAR" />
+    <result column="creditor_id" property="creditorId" jdbcType="BIGINT" />
+    <result column="debtor_id" property="debtorId" jdbcType="BIGINT" />
+    <result column="should_refund_principal" property="shouldRefundPrincipal" jdbcType="INTEGER" />
+    <result column="should_refund_interest" property="shouldRefundInterest" jdbcType="INTEGER" />
+    <result column="should_refund_compensation" property="shouldRefundCompensation" jdbcType="INTEGER" />
+    <result column="should_refund_total" property="shouldRefundTotal" jdbcType="INTEGER" />
+    <result column="relieve_amount" property="relieveAmount" jdbcType="INTEGER" />
+    <result column="already_refund_amount" property="alreadyRefundAmount" jdbcType="INTEGER" />
+    <result column="borrow_date" property="borrowDate" jdbcType="DATE" />
+    <result column="should_refund_date" property="shouldRefundDate" jdbcType="DATE" />
+    <result column="overdue_day" property="overdueDay" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="last_sync_time" property="lastSyncTime" jdbcType="TIMESTAMP" />
+    <result column="loan_business_department" property="loanBusinessDepartment" jdbcType="VARCHAR" />
+    <result column="customer_manager" property="customerManager" jdbcType="VARCHAR" />
+    <result column="customer_manager_mobile" property="customerManagerMobile" jdbcType="VARCHAR" />
+    <result column="poundage" property="poundage" jdbcType="INTEGER" />
+    <result column="poundage_compensation" property="poundageCompensation" jdbcType="INTEGER" />
+    <result column="creditor_entrust_expire_time" property="creditorEntrustExpireTime" jdbcType="TIMESTAMP" />
+    <result column="funds_provider" property="fundsProvider" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_code" property="productCode" jdbcType="VARCHAR" />
+    <result column="bill_no" property="billNo" jdbcType="VARCHAR" />
+    <result column="data_source" property="dataSource" jdbcType="VARCHAR" />
+    <result column="pub_time" property="pubTime" jdbcType="TIMESTAMP" />
+    <result column="loan_agreement_url" property="loanAgreementUrl" jdbcType="VARCHAR" />
+    <result column="task_code_remark" property="taskCodeRemark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, task_code, creditor_id, debtor_id, should_refund_principal, should_refund_interest, 
+    should_refund_compensation, should_refund_total, relieve_amount, already_refund_amount, 
+    borrow_date, should_refund_date, overdue_day, status, create_time, update_time, last_sync_time, 
+    loan_business_department, customer_manager, customer_manager_mobile, poundage, poundage_compensation, 
+    creditor_entrust_expire_time, funds_provider, product_name, product_code, bill_no, 
+    data_source, pub_time, loan_agreement_url, task_code_remark
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.aitravelba.pojo.yihui.ArrearDebtExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_arrear_debt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+       limit ${limitStart} , ${limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_arrear_debt
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_arrear_debt
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.aitravelba.pojo.yihui.ArrearDebtExample" >
+    delete from t_arrear_debt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.aitravelba.pojo.yihui.ArrearDebt" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_arrear_debt (task_code, creditor_id, debtor_id, 
+      should_refund_principal, should_refund_interest, 
+      should_refund_compensation, should_refund_total, 
+      relieve_amount, already_refund_amount, borrow_date, 
+      should_refund_date, overdue_day, status, 
+      create_time, update_time, last_sync_time, 
+      loan_business_department, customer_manager, 
+      customer_manager_mobile, poundage, poundage_compensation, 
+      creditor_entrust_expire_time, funds_provider, 
+      product_name, product_code, bill_no, 
+      data_source, pub_time, loan_agreement_url, 
+      task_code_remark)
+    values (#{taskCode,jdbcType=VARCHAR}, #{creditorId,jdbcType=BIGINT}, #{debtorId,jdbcType=BIGINT}, 
+      #{shouldRefundPrincipal,jdbcType=INTEGER}, #{shouldRefundInterest,jdbcType=INTEGER}, 
+      #{shouldRefundCompensation,jdbcType=INTEGER}, #{shouldRefundTotal,jdbcType=INTEGER}, 
+      #{relieveAmount,jdbcType=INTEGER}, #{alreadyRefundAmount,jdbcType=INTEGER}, #{borrowDate,jdbcType=DATE}, 
+      #{shouldRefundDate,jdbcType=DATE}, #{overdueDay,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{lastSyncTime,jdbcType=TIMESTAMP}, 
+      #{loanBusinessDepartment,jdbcType=VARCHAR}, #{customerManager,jdbcType=VARCHAR}, 
+      #{customerManagerMobile,jdbcType=VARCHAR}, #{poundage,jdbcType=INTEGER}, #{poundageCompensation,jdbcType=INTEGER}, 
+      #{creditorEntrustExpireTime,jdbcType=TIMESTAMP}, #{fundsProvider,jdbcType=VARCHAR}, 
+      #{productName,jdbcType=VARCHAR}, #{productCode,jdbcType=VARCHAR}, #{billNo,jdbcType=VARCHAR}, 
+      #{dataSource,jdbcType=VARCHAR}, #{pubTime,jdbcType=TIMESTAMP}, #{loanAgreementUrl,jdbcType=VARCHAR}, 
+      #{taskCodeRemark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.aitravelba.pojo.yihui.ArrearDebt" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_arrear_debt
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="taskCode != null" >
+        task_code,
+      </if>
+      <if test="creditorId != null" >
+        creditor_id,
+      </if>
+      <if test="debtorId != null" >
+        debtor_id,
+      </if>
+      <if test="shouldRefundPrincipal != null" >
+        should_refund_principal,
+      </if>
+      <if test="shouldRefundInterest != null" >
+        should_refund_interest,
+      </if>
+      <if test="shouldRefundCompensation != null" >
+        should_refund_compensation,
+      </if>
+      <if test="shouldRefundTotal != null" >
+        should_refund_total,
+      </if>
+      <if test="relieveAmount != null" >
+        relieve_amount,
+      </if>
+      <if test="alreadyRefundAmount != null" >
+        already_refund_amount,
+      </if>
+      <if test="borrowDate != null" >
+        borrow_date,
+      </if>
+      <if test="shouldRefundDate != null" >
+        should_refund_date,
+      </if>
+      <if test="overdueDay != null" >
+        overdue_day,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="lastSyncTime != null" >
+        last_sync_time,
+      </if>
+      <if test="loanBusinessDepartment != null" >
+        loan_business_department,
+      </if>
+      <if test="customerManager != null" >
+        customer_manager,
+      </if>
+      <if test="customerManagerMobile != null" >
+        customer_manager_mobile,
+      </if>
+      <if test="poundage != null" >
+        poundage,
+      </if>
+      <if test="poundageCompensation != null" >
+        poundage_compensation,
+      </if>
+      <if test="creditorEntrustExpireTime != null" >
+        creditor_entrust_expire_time,
+      </if>
+      <if test="fundsProvider != null" >
+        funds_provider,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productCode != null" >
+        product_code,
+      </if>
+      <if test="billNo != null" >
+        bill_no,
+      </if>
+      <if test="dataSource != null" >
+        data_source,
+      </if>
+      <if test="pubTime != null" >
+        pub_time,
+      </if>
+      <if test="loanAgreementUrl != null" >
+        loan_agreement_url,
+      </if>
+      <if test="taskCodeRemark != null" >
+        task_code_remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="taskCode != null" >
+        #{taskCode,jdbcType=VARCHAR},
+      </if>
+      <if test="creditorId != null" >
+        #{creditorId,jdbcType=BIGINT},
+      </if>
+      <if test="debtorId != null" >
+        #{debtorId,jdbcType=BIGINT},
+      </if>
+      <if test="shouldRefundPrincipal != null" >
+        #{shouldRefundPrincipal,jdbcType=INTEGER},
+      </if>
+      <if test="shouldRefundInterest != null" >
+        #{shouldRefundInterest,jdbcType=INTEGER},
+      </if>
+      <if test="shouldRefundCompensation != null" >
+        #{shouldRefundCompensation,jdbcType=INTEGER},
+      </if>
+      <if test="shouldRefundTotal != null" >
+        #{shouldRefundTotal,jdbcType=INTEGER},
+      </if>
+      <if test="relieveAmount != null" >
+        #{relieveAmount,jdbcType=INTEGER},
+      </if>
+      <if test="alreadyRefundAmount != null" >
+        #{alreadyRefundAmount,jdbcType=INTEGER},
+      </if>
+      <if test="borrowDate != null" >
+        #{borrowDate,jdbcType=DATE},
+      </if>
+      <if test="shouldRefundDate != null" >
+        #{shouldRefundDate,jdbcType=DATE},
+      </if>
+      <if test="overdueDay != null" >
+        #{overdueDay,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastSyncTime != null" >
+        #{lastSyncTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loanBusinessDepartment != null" >
+        #{loanBusinessDepartment,jdbcType=VARCHAR},
+      </if>
+      <if test="customerManager != null" >
+        #{customerManager,jdbcType=VARCHAR},
+      </if>
+      <if test="customerManagerMobile != null" >
+        #{customerManagerMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="poundage != null" >
+        #{poundage,jdbcType=INTEGER},
+      </if>
+      <if test="poundageCompensation != null" >
+        #{poundageCompensation,jdbcType=INTEGER},
+      </if>
+      <if test="creditorEntrustExpireTime != null" >
+        #{creditorEntrustExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fundsProvider != null" >
+        #{fundsProvider,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null" >
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="billNo != null" >
+        #{billNo,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSource != null" >
+        #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="pubTime != null" >
+        #{pubTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loanAgreementUrl != null" >
+        #{loanAgreementUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="taskCodeRemark != null" >
+        #{taskCodeRemark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.aitravelba.pojo.yihui.ArrearDebtExample" resultType="java.lang.Integer" >
+    select count(*) from t_arrear_debt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_arrear_debt
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.taskCode != null" >
+        task_code = #{record.taskCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creditorId != null" >
+        creditor_id = #{record.creditorId,jdbcType=BIGINT},
+      </if>
+      <if test="record.debtorId != null" >
+        debtor_id = #{record.debtorId,jdbcType=BIGINT},
+      </if>
+      <if test="record.shouldRefundPrincipal != null" >
+        should_refund_principal = #{record.shouldRefundPrincipal,jdbcType=INTEGER},
+      </if>
+      <if test="record.shouldRefundInterest != null" >
+        should_refund_interest = #{record.shouldRefundInterest,jdbcType=INTEGER},
+      </if>
+      <if test="record.shouldRefundCompensation != null" >
+        should_refund_compensation = #{record.shouldRefundCompensation,jdbcType=INTEGER},
+      </if>
+      <if test="record.shouldRefundTotal != null" >
+        should_refund_total = #{record.shouldRefundTotal,jdbcType=INTEGER},
+      </if>
+      <if test="record.relieveAmount != null" >
+        relieve_amount = #{record.relieveAmount,jdbcType=INTEGER},
+      </if>
+      <if test="record.alreadyRefundAmount != null" >
+        already_refund_amount = #{record.alreadyRefundAmount,jdbcType=INTEGER},
+      </if>
+      <if test="record.borrowDate != null" >
+        borrow_date = #{record.borrowDate,jdbcType=DATE},
+      </if>
+      <if test="record.shouldRefundDate != null" >
+        should_refund_date = #{record.shouldRefundDate,jdbcType=DATE},
+      </if>
+      <if test="record.overdueDay != null" >
+        overdue_day = #{record.overdueDay,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.lastSyncTime != null" >
+        last_sync_time = #{record.lastSyncTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.loanBusinessDepartment != null" >
+        loan_business_department = #{record.loanBusinessDepartment,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerManager != null" >
+        customer_manager = #{record.customerManager,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerManagerMobile != null" >
+        customer_manager_mobile = #{record.customerManagerMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.poundage != null" >
+        poundage = #{record.poundage,jdbcType=INTEGER},
+      </if>
+      <if test="record.poundageCompensation != null" >
+        poundage_compensation = #{record.poundageCompensation,jdbcType=INTEGER},
+      </if>
+      <if test="record.creditorEntrustExpireTime != null" >
+        creditor_entrust_expire_time = #{record.creditorEntrustExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.fundsProvider != null" >
+        funds_provider = #{record.fundsProvider,jdbcType=VARCHAR},
+      </if>
+      <if test="record.productName != null" >
+        product_name = #{record.productName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.productCode != null" >
+        product_code = #{record.productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.billNo != null" >
+        bill_no = #{record.billNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dataSource != null" >
+        data_source = #{record.dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pubTime != null" >
+        pub_time = #{record.pubTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.loanAgreementUrl != null" >
+        loan_agreement_url = #{record.loanAgreementUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taskCodeRemark != null" >
+        task_code_remark = #{record.taskCodeRemark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_arrear_debt
+    set id = #{record.id,jdbcType=BIGINT},
+      task_code = #{record.taskCode,jdbcType=VARCHAR},
+      creditor_id = #{record.creditorId,jdbcType=BIGINT},
+      debtor_id = #{record.debtorId,jdbcType=BIGINT},
+      should_refund_principal = #{record.shouldRefundPrincipal,jdbcType=INTEGER},
+      should_refund_interest = #{record.shouldRefundInterest,jdbcType=INTEGER},
+      should_refund_compensation = #{record.shouldRefundCompensation,jdbcType=INTEGER},
+      should_refund_total = #{record.shouldRefundTotal,jdbcType=INTEGER},
+      relieve_amount = #{record.relieveAmount,jdbcType=INTEGER},
+      already_refund_amount = #{record.alreadyRefundAmount,jdbcType=INTEGER},
+      borrow_date = #{record.borrowDate,jdbcType=DATE},
+      should_refund_date = #{record.shouldRefundDate,jdbcType=DATE},
+      overdue_day = #{record.overdueDay,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=TINYINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      last_sync_time = #{record.lastSyncTime,jdbcType=TIMESTAMP},
+      loan_business_department = #{record.loanBusinessDepartment,jdbcType=VARCHAR},
+      customer_manager = #{record.customerManager,jdbcType=VARCHAR},
+      customer_manager_mobile = #{record.customerManagerMobile,jdbcType=VARCHAR},
+      poundage = #{record.poundage,jdbcType=INTEGER},
+      poundage_compensation = #{record.poundageCompensation,jdbcType=INTEGER},
+      creditor_entrust_expire_time = #{record.creditorEntrustExpireTime,jdbcType=TIMESTAMP},
+      funds_provider = #{record.fundsProvider,jdbcType=VARCHAR},
+      product_name = #{record.productName,jdbcType=VARCHAR},
+      product_code = #{record.productCode,jdbcType=VARCHAR},
+      bill_no = #{record.billNo,jdbcType=VARCHAR},
+      data_source = #{record.dataSource,jdbcType=VARCHAR},
+      pub_time = #{record.pubTime,jdbcType=TIMESTAMP},
+      loan_agreement_url = #{record.loanAgreementUrl,jdbcType=VARCHAR},
+      task_code_remark = #{record.taskCodeRemark,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.aitravelba.pojo.yihui.ArrearDebt" >
+    update t_arrear_debt
+    <set >
+      <if test="taskCode != null" >
+        task_code = #{taskCode,jdbcType=VARCHAR},
+      </if>
+      <if test="creditorId != null" >
+        creditor_id = #{creditorId,jdbcType=BIGINT},
+      </if>
+      <if test="debtorId != null" >
+        debtor_id = #{debtorId,jdbcType=BIGINT},
+      </if>
+      <if test="shouldRefundPrincipal != null" >
+        should_refund_principal = #{shouldRefundPrincipal,jdbcType=INTEGER},
+      </if>
+      <if test="shouldRefundInterest != null" >
+        should_refund_interest = #{shouldRefundInterest,jdbcType=INTEGER},
+      </if>
+      <if test="shouldRefundCompensation != null" >
+        should_refund_compensation = #{shouldRefundCompensation,jdbcType=INTEGER},
+      </if>
+      <if test="shouldRefundTotal != null" >
+        should_refund_total = #{shouldRefundTotal,jdbcType=INTEGER},
+      </if>
+      <if test="relieveAmount != null" >
+        relieve_amount = #{relieveAmount,jdbcType=INTEGER},
+      </if>
+      <if test="alreadyRefundAmount != null" >
+        already_refund_amount = #{alreadyRefundAmount,jdbcType=INTEGER},
+      </if>
+      <if test="borrowDate != null" >
+        borrow_date = #{borrowDate,jdbcType=DATE},
+      </if>
+      <if test="shouldRefundDate != null" >
+        should_refund_date = #{shouldRefundDate,jdbcType=DATE},
+      </if>
+      <if test="overdueDay != null" >
+        overdue_day = #{overdueDay,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastSyncTime != null" >
+        last_sync_time = #{lastSyncTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loanBusinessDepartment != null" >
+        loan_business_department = #{loanBusinessDepartment,jdbcType=VARCHAR},
+      </if>
+      <if test="customerManager != null" >
+        customer_manager = #{customerManager,jdbcType=VARCHAR},
+      </if>
+      <if test="customerManagerMobile != null" >
+        customer_manager_mobile = #{customerManagerMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="poundage != null" >
+        poundage = #{poundage,jdbcType=INTEGER},
+      </if>
+      <if test="poundageCompensation != null" >
+        poundage_compensation = #{poundageCompensation,jdbcType=INTEGER},
+      </if>
+      <if test="creditorEntrustExpireTime != null" >
+        creditor_entrust_expire_time = #{creditorEntrustExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fundsProvider != null" >
+        funds_provider = #{fundsProvider,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null" >
+        product_code = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="billNo != null" >
+        bill_no = #{billNo,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSource != null" >
+        data_source = #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="pubTime != null" >
+        pub_time = #{pubTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loanAgreementUrl != null" >
+        loan_agreement_url = #{loanAgreementUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="taskCodeRemark != null" >
+        task_code_remark = #{taskCodeRemark,jdbcType=VARCHAR},
+      </if>
+      update_time = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.aitravelba.pojo.yihui.ArrearDebt" >
+    update t_arrear_debt
+    set task_code = #{taskCode,jdbcType=VARCHAR},
+      creditor_id = #{creditorId,jdbcType=BIGINT},
+      debtor_id = #{debtorId,jdbcType=BIGINT},
+      should_refund_principal = #{shouldRefundPrincipal,jdbcType=INTEGER},
+      should_refund_interest = #{shouldRefundInterest,jdbcType=INTEGER},
+      should_refund_compensation = #{shouldRefundCompensation,jdbcType=INTEGER},
+      should_refund_total = #{shouldRefundTotal,jdbcType=INTEGER},
+      relieve_amount = #{relieveAmount,jdbcType=INTEGER},
+      already_refund_amount = #{alreadyRefundAmount,jdbcType=INTEGER},
+      borrow_date = #{borrowDate,jdbcType=DATE},
+      should_refund_date = #{shouldRefundDate,jdbcType=DATE},
+      overdue_day = #{overdueDay,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = now(),
+      last_sync_time = #{lastSyncTime,jdbcType=TIMESTAMP},
+      loan_business_department = #{loanBusinessDepartment,jdbcType=VARCHAR},
+      customer_manager = #{customerManager,jdbcType=VARCHAR},
+      customer_manager_mobile = #{customerManagerMobile,jdbcType=VARCHAR},
+      poundage = #{poundage,jdbcType=INTEGER},
+      poundage_compensation = #{poundageCompensation,jdbcType=INTEGER},
+      creditor_entrust_expire_time = #{creditorEntrustExpireTime,jdbcType=TIMESTAMP},
+      funds_provider = #{fundsProvider,jdbcType=VARCHAR},
+      product_name = #{productName,jdbcType=VARCHAR},
+      product_code = #{productCode,jdbcType=VARCHAR},
+      bill_no = #{billNo,jdbcType=VARCHAR},
+      data_source = #{dataSource,jdbcType=VARCHAR},
+      pub_time = #{pubTime,jdbcType=TIMESTAMP},
+      loan_agreement_url = #{loanAgreementUrl,jdbcType=VARCHAR},
+      task_code_remark = #{taskCodeRemark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+
+</mapper>

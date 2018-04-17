@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aitravelba.orm.yihui.CollectionEntrustMapper" >
+  <resultMap id="BaseResultMap" type="com.aitravelba.pojo.yihui.CollectionEntrust" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="debtor_id" property="debtorId" jdbcType="BIGINT" />
+    <result column="dept_id" property="deptId" jdbcType="BIGINT" />
+    <result column="org_id" property="orgId" jdbcType="BIGINT" />
+    <result column="dispatcher_id" property="dispatcherId" jdbcType="BIGINT" />
+    <result column="entrust_begin_time" property="entrustBeginTime" jdbcType="TIMESTAMP" />
+    <result column="entrust_expire_time" property="entrustExpireTime" jdbcType="TIMESTAMP" />
+    <result column="entrust_end_time" property="entrustEndTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="abandon_reason" property="abandonReason" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="address_type" property="addressType" jdbcType="TINYINT" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="already_refund_amount" property="alreadyRefundAmount" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, debtor_id, dept_id, org_id, dispatcher_id, entrust_begin_time, entrust_expire_time, 
+    entrust_end_time, status, abandon_reason, create_time, update_time, address_type, 
+    address, already_refund_amount
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.aitravelba.pojo.yihui.CollectionEntrustExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_collection_entrust
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+       limit ${limitStart} , ${limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_collection_entrust
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_collection_entrust
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.aitravelba.pojo.yihui.CollectionEntrustExample" >
+    delete from t_collection_entrust
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.aitravelba.pojo.yihui.CollectionEntrust" useGeneratedKeys="true"
+            keyProperty="id">
+    insert into t_collection_entrust (id, debtor_id, dept_id, 
+      org_id, dispatcher_id, entrust_begin_time, 
+      entrust_expire_time, entrust_end_time, 
+      status, abandon_reason, create_time, 
+      update_time, address_type, address, 
+      already_refund_amount)
+    values (#{id,jdbcType=BIGINT}, #{debtorId,jdbcType=BIGINT}, #{deptId,jdbcType=BIGINT}, 
+      #{orgId,jdbcType=BIGINT}, #{dispatcherId,jdbcType=BIGINT}, #{entrustBeginTime,jdbcType=TIMESTAMP}, 
+      #{entrustExpireTime,jdbcType=TIMESTAMP}, #{entrustEndTime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=TINYINT}, #{abandonReason,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{addressType,jdbcType=TINYINT}, #{address,jdbcType=VARCHAR}, 
+      #{alreadyRefundAmount,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.aitravelba.pojo.yihui.CollectionEntrust" useGeneratedKeys="true"
+            keyProperty="id">
+    insert into t_collection_entrust
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="debtorId != null" >
+        debtor_id,
+      </if>
+      <if test="deptId != null" >
+        dept_id,
+      </if>
+      <if test="orgId != null" >
+        org_id,
+      </if>
+      <if test="dispatcherId != null" >
+        dispatcher_id,
+      </if>
+      <if test="entrustBeginTime != null" >
+        entrust_begin_time,
+      </if>
+      <if test="entrustExpireTime != null" >
+        entrust_expire_time,
+      </if>
+      <if test="entrustEndTime != null" >
+        entrust_end_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="abandonReason != null" >
+        abandon_reason,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="addressType != null" >
+        address_type,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="alreadyRefundAmount != null" >
+        already_refund_amount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="debtorId != null" >
+        #{debtorId,jdbcType=BIGINT},
+      </if>
+      <if test="deptId != null" >
+        #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=BIGINT},
+      </if>
+      <if test="dispatcherId != null" >
+        #{dispatcherId,jdbcType=BIGINT},
+      </if>
+      <if test="entrustBeginTime != null" >
+        #{entrustBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entrustExpireTime != null" >
+        #{entrustExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entrustEndTime != null" >
+        #{entrustEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="abandonReason != null" >
+        #{abandonReason,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="addressType != null" >
+        #{addressType,jdbcType=TINYINT},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="alreadyRefundAmount != null" >
+        #{alreadyRefundAmount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.aitravelba.pojo.yihui.CollectionEntrustExample" resultType="java.lang.Integer" >
+    select count(*) from t_collection_entrust
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_collection_entrust
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.debtorId != null" >
+        debtor_id = #{record.debtorId,jdbcType=BIGINT},
+      </if>
+      <if test="record.deptId != null" >
+        dept_id = #{record.deptId,jdbcType=BIGINT},
+      </if>
+      <if test="record.orgId != null" >
+        org_id = #{record.orgId,jdbcType=BIGINT},
+      </if>
+      <if test="record.dispatcherId != null" >
+        dispatcher_id = #{record.dispatcherId,jdbcType=BIGINT},
+      </if>
+      <if test="record.entrustBeginTime != null" >
+        entrust_begin_time = #{record.entrustBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.entrustExpireTime != null" >
+        entrust_expire_time = #{record.entrustExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.entrustEndTime != null" >
+        entrust_end_time = #{record.entrustEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.abandonReason != null" >
+        abandon_reason = #{record.abandonReason,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.addressType != null" >
+        address_type = #{record.addressType,jdbcType=TINYINT},
+      </if>
+      <if test="record.address != null" >
+        address = #{record.address,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alreadyRefundAmount != null" >
+        already_refund_amount = #{record.alreadyRefundAmount,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_collection_entrust
+    set id = #{record.id,jdbcType=BIGINT},
+      debtor_id = #{record.debtorId,jdbcType=BIGINT},
+      dept_id = #{record.deptId,jdbcType=BIGINT},
+      org_id = #{record.orgId,jdbcType=BIGINT},
+      dispatcher_id = #{record.dispatcherId,jdbcType=BIGINT},
+      entrust_begin_time = #{record.entrustBeginTime,jdbcType=TIMESTAMP},
+      entrust_expire_time = #{record.entrustExpireTime,jdbcType=TIMESTAMP},
+      entrust_end_time = #{record.entrustEndTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      abandon_reason = #{record.abandonReason,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      address_type = #{record.addressType,jdbcType=TINYINT},
+      address = #{record.address,jdbcType=VARCHAR},
+      already_refund_amount = #{record.alreadyRefundAmount,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.aitravelba.pojo.yihui.CollectionEntrust" >
+    update t_collection_entrust
+    <set >
+      <if test="debtorId != null" >
+        debtor_id = #{debtorId,jdbcType=BIGINT},
+      </if>
+      <if test="deptId != null" >
+        dept_id = #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="orgId != null" >
+        org_id = #{orgId,jdbcType=BIGINT},
+      </if>
+      <if test="dispatcherId != null" >
+        dispatcher_id = #{dispatcherId,jdbcType=BIGINT},
+      </if>
+      <if test="entrustBeginTime != null" >
+        entrust_begin_time = #{entrustBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entrustExpireTime != null" >
+        entrust_expire_time = #{entrustExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entrustEndTime != null" >
+        entrust_end_time = #{entrustEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="abandonReason != null" >
+        abandon_reason = #{abandonReason,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="addressType != null" >
+        address_type = #{addressType,jdbcType=TINYINT},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="alreadyRefundAmount != null" >
+        already_refund_amount = #{alreadyRefundAmount,jdbcType=INTEGER},
+      </if>
+      update_time = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.aitravelba.pojo.yihui.CollectionEntrust" >
+    update t_collection_entrust
+    set debtor_id = #{debtorId,jdbcType=BIGINT},
+      dept_id = #{deptId,jdbcType=BIGINT},
+      org_id = #{orgId,jdbcType=BIGINT},
+      dispatcher_id = #{dispatcherId,jdbcType=BIGINT},
+      entrust_begin_time = #{entrustBeginTime,jdbcType=TIMESTAMP},
+      entrust_expire_time = #{entrustExpireTime,jdbcType=TIMESTAMP},
+      entrust_end_time = #{entrustEndTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      abandon_reason = #{abandonReason,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      address_type = #{addressType,jdbcType=TINYINT},
+      address = #{address,jdbcType=VARCHAR},
+      already_refund_amount = #{alreadyRefundAmount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectEntrustWithoutCollectionRecord" resultMap="BaseResultMap" parameterType="java.util.Date" >
+    SELECT
+		ce.*
+	FROM
+		t_collection_entrust ce
+	WHERE
+		ce.status = 0
+		AND ce.entrust_begin_time &lt;= #{before7Day}
+  </select>
+  
+  <select id="selectEntrustWithoutRefundRecord" resultMap="BaseResultMap" parameterType="java.util.Date" >
+    SELECT
+		ce.*
+	FROM
+		t_collection_entrust ce
+	WHERE
+		ce.status in (1, 2, 3)
+		AND ce.entrust_begin_time &lt;= #{before30Day}
+  </select>
+  <select id="selectGroupIdByDebtId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+     select t1.* 
+     from 
+     t_collection_entrust t1 join t_collection_entrust_debt t2 on t1.id = t2.entrust_id 
+     where t1.status &lt;=60 and t2.debt_id = #{debtId}
+  </select>
+  <select id="showEntrustFirstParty" resultType="java.lang.String">
+     select DISTINCT(CONCAT(t1.id,",",t1.name)) from 
+	 t_sys_organization t1
+	 join t_arrear_debt t2 on t1.id = t2.creditor_id and t2.`status` &gt; 0
+	 join t_collection_entrust t3 on t3.debtor_id = t2.debtor_id
+	 where t3.id = #{entrustId}
+  </select>
+  <select id="selectCanAutoFinishTask" resultType="com.aitravelba.pojo.yihui.CollectionEntrust">
+    <![CDATA[
+     select 
+		t1.id as id,
+		t1.debtor_id as debtorId,
+		t1.dept_id as deptId,
+		t1.org_id as orgId,
+		t1.dispatcher_id as dispatcherId,
+		t1.`status` as status
+		from t_collection_entrust t1 left join t_arrear_debt t2 on t1.debtor_id = t2.debtor_id and t2.`status`>=0 and t2.`status`!=100
+		where t1.`status` >=0 and t1.`status`<61  and TIMESTAMPDIFF(HOUR,t1.update_time,now())>=24
+		GROUP BY t1.id
+		HAVING sum(t2.should_refund_total) = 0
+    ]]>
+  </select>
+  
+  <select id="selectElectricCanAutoFinishTask" resultType="com.aitravelba.pojo.yihui.CollectionEntrust">
+    <![CDATA[
+     select 
+		t1.id as id,
+		t1.debtor_id as debtorId,
+		t1.dept_id as deptId,
+		t1.org_id as orgId,
+		t1.dispatcher_id as dispatcherId,
+		t1.`status` as status
+		from t_collection_entrust t1  join t_arrear_debt t2 on t1.debtor_id = t2.debtor_id and t2.`status` = -5
+		where t1.`status` = 101  and TIMESTAMPDIFF(HOUR,t1.update_time,now()) >= 36 
+		GROUP BY t1.id
+		HAVING sum(t2.should_refund_total) = 0
+    ]]>
+  </select>
+  
+  
+  <sql id="Collection_Entrust_Where_Clause" >
+    <where>
+    	ce.debtor_id = d.id AND ce.dispatcher_id = u.id AND ce.org_id = o.id
+    	<if test="minEntrustBeginTime != null" >
+	      AND ce.entrust_begin_time &gt;= #{minEntrustBeginTime}
+	    </if>
+	    <if test="maxEntrustBeginTime != null" >
+	      AND ce.entrust_begin_time &lt;= #{maxEntrustBeginTime}
+	    </if>
+	    <if test="minEntrustExpireTime != null" >
+	      AND ce.entrust_expire_time &gt;= #{minEntrustExpireTime}
+	    </if>
+	    <if test="maxEntrustExpireTime != null" >
+	      AND ce.entrust_expire_time &lt;= #{maxEntrustExpireTime}
+	    </if>
+	    <if test="minEntrustEndTime != null" >
+	      AND ce.entrust_end_time &gt;= #{minEntrustEndTime}
+	    </if>
+	    <if test="maxEntrustEndTime != null" >
+	      AND ce.entrust_end_time &lt;= #{maxEntrustEndTime}
+	    </if>
+	    <if test="debtorId != null" >
+	      AND ce.debtor_id = #{debtorId}
+	    </if>
+	    <if test="searchValue != null and searchValue != ''" >
+	      AND (d.card_no like CONCAT(#{searchValue},'%') or d.real_name like CONCAT(#{searchValue},'%')
+	      	or o.name like CONCAT(#{searchValue},'%') or u.real_name like CONCAT(#{searchValue},'%')
+	       	or u.mobile like CONCAT(#{searchValue},'%'))
+	    </if>
+    </where>
+  </sql>
+  
+  <sql id="Count_Where_Clause" >
+    <where>
+    	<if test="minEntrustBeginTime != null" >
+	      AND ce.entrust_begin_time &gt;= #{minEntrustBeginTime}
+	    </if>
+	    <if test="maxEntrustBeginTime != null" >
+	      AND ce.entrust_begin_time &lt;= #{maxEntrustBeginTime}
+	    </if>
+	    <if test="minEntrustExpireTime != null" >
+	      AND ce.entrust_expire_time &gt;= #{minEntrustExpireTime}
+	    </if>
+	    <if test="maxEntrustExpireTime != null" >
+	      AND ce.entrust_expire_time &lt;= #{maxEntrustExpireTime}
+	    </if>
+	    <if test="minEntrustEndTime != null" >
+	      AND ce.entrust_end_time &gt;= #{minEntrustEndTime}
+	    </if>
+	    <if test="maxEntrustEndTime != null" >
+	      AND ce.entrust_end_time &lt;= #{maxEntrustEndTime}
+	    </if>
+	    <if test="debtorId != null" >
+	      AND ce.debtor_id = #{debtorId}
+	    </if>
+	    <if test="searchValue != null and searchValue != ''" >
+	      AND ce.debtor_id = d.id AND ce.dispatcher_id = u.id AND ce.org_id = o.id
+	      AND (d.card_no like CONCAT(#{searchValue},'%') or d.real_name like CONCAT(#{searchValue},'%')
+	      	or o.name like CONCAT(#{searchValue},'%') or u.real_name like CONCAT(#{searchValue},'%')
+	       	or u.mobile like CONCAT(#{searchValue},'%'))
+	    </if>
+    </where>
+  </sql>
+  
+  
+  <update id="updateWithTime" parameterType="com.aitravelba.pojo.yihui.CollectionEntrust" >
+    update t_collection_entrust
+    <set >
+      <if test="debtorId != null" >
+        debtor_id = #{debtorId,jdbcType=BIGINT},
+      </if>
+      <if test="deptId != null" >
+        dept_id = #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="orgId != null" >
+        org_id = #{orgId,jdbcType=BIGINT},
+      </if>
+      <if test="dispatcherId != null" >
+        dispatcher_id = #{dispatcherId,jdbcType=BIGINT},
+      </if>
+      <if test="entrustBeginTime != null" >
+        entrust_begin_time = #{entrustBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entrustExpireTime != null" >
+        entrust_expire_time = #{entrustExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entrustEndTime != null" >
+        entrust_end_time = #{entrustEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="abandonReason != null" >
+        abandon_reason = #{abandonReason,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="addressType != null" >
+        address_type = #{addressType,jdbcType=TINYINT},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="alreadyRefundAmount != null" >
+        already_refund_amount = #{alreadyRefundAmount,jdbcType=INTEGER},
+      </if>
+      update_time = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+    AND update_time = #{updateTime}
+  </update>
+  
+</mapper>
