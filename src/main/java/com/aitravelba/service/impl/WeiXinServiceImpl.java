@@ -2,30 +2,24 @@ package com.aitravelba.service.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.aitravelba.dao.yihui.ArrearDebtDao;
-import com.aitravelba.dao.yihui.CollectionEntrustDao;
-import com.aitravelba.dao.yihui.CollectionEntrustDebtDao;
-import com.aitravelba.dao.yihui.DebtorDao;
+import com.aitravelba.dao.weixin.NewsDetailsDao;
 import com.aitravelba.dto.req.TextMessageReqDto;
 import com.aitravelba.dto.resp.TextMessageRespDto;
-import com.aitravelba.pojo.yihui.ArrearDebt;
-import com.aitravelba.pojo.yihui.Debtor;
+import com.aitravelba.pojo.weixin.NewsDetails;
 import com.aitravelba.service.WeiXinService;
-import com.aitravelba.util.DateUtil;
-import com.aitravelba.util.IDCardUtil;
-import com.aitravelba.util.MobileUtil;
 /**
  * 
  * @desc 微信服务器处理service
@@ -37,15 +31,8 @@ public class WeiXinServiceImpl implements WeiXinService {
 
 	private static final Logger log= LoggerFactory.getLogger(WeiXinServiceImpl.class);
 	//private static final String KR36_FEED_RSS = "http://36kr.com/feed";
-	
-	@Resource
-	private DebtorDao debtorDao;
-	@Resource
-	private ArrearDebtDao arrearDebtDao;
-	@Resource
-	private CollectionEntrustDao collectionEntrustDao;
-	@Resource
-	private CollectionEntrustDebtDao collectionEntrustDebtDao;
+	@Autowired
+	private NewsDetailsDao newsDetailsDao;
 	
 	@Override
 	public void serverInit(HttpServletResponse response,String echostr) {
@@ -85,88 +72,51 @@ public class WeiXinServiceImpl implements WeiXinService {
 					resp.setContent("你个傻逼！！！");
 				}else if(isThirdApp(msg.getContent())) {
 					log.info("第三方应用");
-				}else {
-					try {
-						//易回查询
-						List<Debtor> debtorList = null;
-						String cont = msg.getContent().trim();
-						if(IDCardUtil.isValidIDCard(cont)) {
-							//身份证查询
-							debtorList = debtorDao.selectByCardNo(cont);
-							//模板    ：   债务人（张三） 逾期N天，欠款N元  未被抢单
-							StringBuffer sb = new StringBuffer();
-							if(null != debtorList && debtorList.size() > 0) {
-								Debtor debtor = debtorList.get(0);
-								sb.append("债务人("+debtor.getRealName()+")");
-								if(debtor.getStatus()==0) {
-									sb.append("未被抢单");
-								}else if(debtor.getStatus() == 1) {
-									sb.append("已在催收中");
-								}else if(debtor.getStatus() == 2 || debtor.getStatus() == 3) {
-									sb.append("已到电催");
-								}else if(debtor.getStatus() == -128) {
-									sb.append("已经出库");
-								}
-								List<ArrearDebt> arrearDebtList = arrearDebtDao.selectByDebtorId(debtor.getId());
-								int overdue = -1;
-								long shouldRefundTotal = 0;
-								if(null != arrearDebtList && arrearDebtList.size() >0 ) {
-									for(ArrearDebt debt : arrearDebtList) {
-										overdue = Math.max(overdue, DateUtil.daysBetween(debt.getShouldRefundDate(), new Date()));
-										shouldRefundTotal += debt.getShouldRefundTotal();
-									}
-								}
-								sb.append(";逾期："+overdue+"天,");
-								sb.append("欠款金额："+shouldRefundTotal/100.0+"元");
-							}else {
-								sb.append("易回系统无此债务人");
-							}
-							resp.setContent(sb.toString());
-						}else if(MobileUtil.isValidPhoneNumber(cont)) {
-							//手机号查询
-							debtorList = debtorDao.selectByMobile(cont);
-							//模板    ：   债务人（张三） 逾期N天，欠款N元  未被抢单
-							StringBuffer sb = new StringBuffer();
-							if(null != debtorList && debtorList.size() > 0) {
-								Debtor debtor = debtorList.get(0);
-								sb.append("债务人("+debtor.getRealName()+")");
-								if(debtor.getStatus()==0) {
-									sb.append("未被抢单");
-								}else if(debtor.getStatus() == 1) {
-									sb.append("已在催收中");
-								}else if(debtor.getStatus() == 2 || debtor.getStatus() == 3) {
-									sb.append("已到电催");
-								}else if(debtor.getStatus() == -128) {
-									sb.append("已经出库");
-								}
-								List<ArrearDebt> arrearDebtList = arrearDebtDao.selectByDebtorId(debtor.getId());
-								int overdue = -1;
-								long shouldRefundTotal = 0;
-								if(null != arrearDebtList && arrearDebtList.size() >0 ) {
-									for(ArrearDebt debt : arrearDebtList) {
-										overdue = Math.max(overdue, DateUtil.daysBetween(debt.getShouldRefundDate(), new Date()));
-										shouldRefundTotal += debt.getShouldRefundTotal();
-									}
-								}
-								sb.append(";逾期："+overdue+"天,");
-								sb.append("欠款金额："+shouldRefundTotal/100.0+"元");
-							}else {
-								sb.append("易回系统无此债务人");
-							}
-							resp.setContent(sb.toString());
-						}else if(cont.contains("下载")) {
-							resp.setContent("安卓的地址：https://www.pgyer.com/naOa \r\n iOS下载地址：https://www.pgyer.com/n8CE");
-						}else if(cont.contains("帮助")) {
-							resp.setContent("");
-						}else {
-							resp.setContent("该公众号处于开发中...");
-						}
-					}catch(Exception e) {
-						log.error("error happen",e);
+				}else if(isAddNews(msg.getContent())) {
+					log.info("add news");
+					String content = msg.getContent().replaceAll("yygy", "");
+					String[] conts = content.split("#");
+					NewsDetails newsDetails = new NewsDetails();
+					newsDetails.setParentId(1);
+					SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
+					Date curDate = new Date();
+					newsDetails.setContent(sdf.format(curDate)+" 互联网早报，星期二！");
+					newsDetails.setOrder(-1);
+					newsDetails.setCreateTime(curDate);
+					newsDetailsDao.insert(newsDetails);
+					newsDetails.setOrder(0);
+					newsDetails.setContent("在这里，60秒读懂世界！");
+					newsDetailsDao.insert(newsDetails);
+					for(int i=0;i<conts.length;i++) {
+						newsDetails.setOrder(i+1);
+						newsDetails.setContent(conts[i]);
+						newsDetailsDao.insert(newsDetails);
 					}
+					
+				}else {
+					List<NewsDetails> list = newsDetailsDao.queryCurDayNews();
+					if(null != list && list.size() > 0 ) {
+						StringBuffer sb = new StringBuffer();
+						for(NewsDetails newsDetails : list) {
+							if(newsDetails.getOrder() > 0) {
+								if(!newsDetails.getContent().contains("微语")) {
+									sb.append(newsDetails.getOrder()+"、");
+								}
+								sb.append(newsDetails.getContent()+"\n\n");
+							}else {
+								sb.append(newsDetails.getContent()+"\n");
+							}
+							
+						}
+						resp.setContent(sb.toString());
+					}else {
+						resp.setContent("请稍后再试！！！");
+					}
+					
 				}
 			}
 		}
+		log.info("resp:"+resp.getContent());
 		resp.setToUserName(msg.getFromUserName());
 		resp.setFromUserName(msg.getToUserName());
 		resp.setCreateTime(new Date());
@@ -174,7 +124,7 @@ public class WeiXinServiceImpl implements WeiXinService {
 		return resp;
 	}
 	
-	public boolean isThirdApp(String content) {
+	private boolean isThirdApp(String content) {
 		if(null == content || content.trim().length() == 0) {
 			return false;
 		}
@@ -186,6 +136,14 @@ public class WeiXinServiceImpl implements WeiXinService {
 		}
 		return ret;
 	}
+	
+	private boolean isAddNews(String content) {
+		if(content.startsWith("yygy")) {
+			return true;
+		}
+		return false;
+	}
+
 
 	/*public static void main(String[] args) {
 		try {

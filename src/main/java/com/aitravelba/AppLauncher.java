@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Launcher */
 @SpringBootApplication
-@MapperScan("com.aitravelba.orm.yihui")
+@MapperScan("com.aitravelba.orm.weixin")
 public class AppLauncher{
 
   public static void main(String[] args) {

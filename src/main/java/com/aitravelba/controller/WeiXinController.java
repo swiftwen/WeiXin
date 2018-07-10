@@ -1,5 +1,6 @@
 package com.aitravelba.controller;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -18,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.aitravelba.dao.weixin.NewsDetailsDao;
 import com.aitravelba.dto.req.TextMessageReqDto;
 import com.aitravelba.dto.resp.TextMessageRespDto;
+import com.aitravelba.pojo.weixin.NewsDetails;
 import com.aitravelba.service.WeiXinService;
 import com.aitravelba.util.LinkedHashMapCache;
 import com.aitravelba.util.WeiXinValidationUtil;
@@ -41,9 +44,11 @@ public class WeiXinController extends BaseController {
 	private WeiXinService weiXinService;
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
+	@Autowired
+	private NewsDetailsDao newsDetailsDao;
 	
 	
-	private LoadingCache<Long, AtomicLong> counter =  CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.SECONDS)                    .build(new CacheLoader<Long, AtomicLong>() {
+	private LoadingCache<Long, AtomicLong> counter =  CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.SECONDS).build(new CacheLoader<Long, AtomicLong>() {
         @Override
         public AtomicLong load(Long seconds) throws Exception {
             return new AtomicLong(0);
@@ -70,7 +75,7 @@ public class WeiXinController extends BaseController {
         	if(checkApprove) {  //微信服务器接入校验
         		log.info("校验成功");
         		//weiXinService.serverInit(response,echostr);
-        		return weiXinService.acceptMsg(request, response,req);
+        	    return weiXinService.acceptMsg(request, response,req);
         	}else {
         		log.info("校验失败");
         	}
@@ -78,7 +83,16 @@ public class WeiXinController extends BaseController {
         return null;
     }
 	
-	
+	@RequestMapping(value = "/queryCurDayNews")
+	@ResponseBody
+    public String queryCurDayNews(HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
+		
+		List<NewsDetails> list = newsDetailsDao.queryCurDayNews();
+        for(NewsDetails cur : list) {
+        	System.out.println(cur);
+        }
+		return null;
+    }
 	
 	@RequestMapping(value = "/testRate")
 	@ResponseBody
