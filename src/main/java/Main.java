@@ -1,8 +1,5 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 
@@ -13,7 +10,8 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		String s = "yygyabc";
-		System.out.println(s.replace("yygy", ""));
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		System.out.println(c.get(Calendar.DAY_OF_WEEK));
 	}
 }

@@ -3,6 +3,7 @@ package com.aitravelba.service.impl;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -80,7 +81,9 @@ public class WeiXinServiceImpl implements WeiXinService {
 					newsDetails.setParentId(1);
 					SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
 					Date curDate = new Date();
-					newsDetails.setContent(sdf.format(curDate)+" 互联网早报，星期二！");
+					Calendar c = Calendar.getInstance();
+					c.setTime(curDate);
+					newsDetails.setContent(sdf.format(curDate)+" 互联网早报，星期"+(c.get(Calendar.DAY_OF_WEEK)-1));
 					newsDetails.setOrder(-1);
 					newsDetails.setCreateTime(curDate);
 					newsDetailsDao.insert(newsDetails);
@@ -92,7 +95,7 @@ public class WeiXinServiceImpl implements WeiXinService {
 						newsDetails.setContent(conts[i]);
 						newsDetailsDao.insert(newsDetails);
 					}
-					
+					resp.setContent("ok!");
 				}else {
 					List<NewsDetails> list = newsDetailsDao.queryCurDayNews();
 					if(null != list && list.size() > 0 ) {
