@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class WeiXinValidationUtil
 {
-    private static final String token = "alien";
+    private static final String token = "simuquanyi";
 
     /**
      * 

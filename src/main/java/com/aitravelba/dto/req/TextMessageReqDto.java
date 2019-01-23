@@ -48,6 +48,8 @@ public class TextMessageReqDto implements Serializable{
 	 * 事件
 	 */
 	private String event;
+	
+	private String eventKey;
 	/**
 	 * 图片消息图片url
 	 */
@@ -219,6 +221,13 @@ public class TextMessageReqDto implements Serializable{
 	}
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	
+	public String getEventKey() {
+		return eventKey;
+	}
+	public void setEventKey(String eventKey) {
+		this.eventKey = eventKey;
 	}
 	@Override
 	public String toString() {

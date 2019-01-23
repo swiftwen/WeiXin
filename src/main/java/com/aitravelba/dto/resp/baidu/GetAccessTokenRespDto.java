@@ -53,6 +53,12 @@ public class GetAccessTokenRespDto {
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
+
+	@Override
+	public String toString() {
+		return "GetAccessTokenRespDto [refreshToken=" + refreshToken + ", expiresIn=" + expiresIn + ", sessionKey="
+				+ sessionKey + ", accessToken=" + accessToken + "]";
+	}
 	
 	
 }

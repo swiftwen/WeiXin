@@ -65,6 +65,10 @@ public class WeiXinServiceImpl implements WeiXinService {
 				resp.setContent("谢谢你的关注♪（＾∀＾●）ﾉｼ （●´∀｀）♪");
 			}else if("unsubscribe".equals(msg.getEvent())) {
 				//TODO 取消关注处理
+			}else if("CLICK".equals(msg.getEvent())){
+				//点击事件
+				System.out.println(msg.getEventKey());
+				resp.setContent("中信：\n27.5收中信大杯星巴克\n23收中信必胜客30\n33收中信呷哺50（周三周六11点5折友券）\n65收中信小辉哥120（周三周六11点5折友券）上海\n22收中杯星巴克\n18收中信9元享看\n60收汇丰银行电影");
 			}else {
 				//TODO 其他事件处理
 				log.info("取消关注");
@@ -72,17 +76,26 @@ public class WeiXinServiceImpl implements WeiXinService {
 		}else { //其他消息
 			//处理微信公众号回复内容
 			if(MsgType.TEXT.equals(msg.getMsgType())){
-				resp.setContent("功能待开发");
+				//TODO 
+				resp.setContent(msg.getContent());
 			}else if(MsgType.IMAGE.equals(msg.getMsgType())){
 				//调百度图片识别接口
 				GeneralBasicRespDto generalBasicRespDto = baiDuPicRecognizeUtil.recognizePic(msg.getPicUrl());
 				System.out.println(generalBasicRespDto);
 				List<WordResultDto> list = generalBasicRespDto.getWordsResult();
+				StringBuffer content = new StringBuffer();
 				for(WordResultDto wordResult : list){
-					if(wordResult.getWords().contains("券码:")){
-						resp.setContent(wordResult.getWords());
-					}
+					content.append(wordResult.getWords());
+					content.append("\n");
+					/*if(wordResult.getWords().contains("券码:")){
+						content.append(wordResult.getWords());
+						content.append("\n");
+						
+					}*/
 				}
+				resp.setContent(content.toString());
+			}else{
+				resp.setContent("功能待开发");
 			}
 			
 		}
