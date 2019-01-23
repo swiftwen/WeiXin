@@ -2,25 +2,25 @@ package com.aitravelba.service.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.aitravelba.common.MsgType;
 import com.aitravelba.dao.weixin.NewsDetailsDao;
 import com.aitravelba.dto.req.TextMessageReqDto;
 import com.aitravelba.dto.resp.TextMessageRespDto;
-import com.aitravelba.pojo.weixin.NewsDetails;
+import com.aitravelba.dto.resp.baidu.GeneralBasicRespDto;
+import com.aitravelba.dto.resp.baidu.WordResultDto;
 import com.aitravelba.service.WeiXinService;
+import com.aitravelba.util.BaiDuPicRecognizeUtil;
 /**
  * 
  * @desc 微信服务器处理service
@@ -34,6 +34,9 @@ public class WeiXinServiceImpl implements WeiXinService {
 	//private static final String KR36_FEED_RSS = "http://36kr.com/feed";
 	@Autowired
 	private NewsDetailsDao newsDetailsDao;
+	
+	@Autowired
+	private BaiDuPicRecognizeUtil baiDuPicRecognizeUtil;
 	
 	@Override
 	public void serverInit(HttpServletResponse response,String echostr) {
@@ -68,56 +71,20 @@ public class WeiXinServiceImpl implements WeiXinService {
 			}
 		}else { //其他消息
 			//处理微信公众号回复内容
-			if(StringUtils.isNotBlank(msg.getContent())) {
-				if(msg.getContent().trim().contains("文鹏") || msg.getContent().trim().contains("wenpeng")) {
-					resp.setContent("你个傻逼！！！");
-				}else if(isThirdApp(msg.getContent())) {
-					log.info("第三方应用");
-				}else if(isAddNews(msg.getContent())) {
-					log.info("add news");
-					String content = msg.getContent().replaceAll("yygy", "");
-					String[] conts = content.split("#");
-					NewsDetails newsDetails = new NewsDetails();
-					newsDetails.setParentId(1);
-					SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
-					Date curDate = new Date();
-					Calendar c = Calendar.getInstance();
-					c.setTime(curDate);
-					newsDetails.setContent(sdf.format(curDate)+" 互联网早报，星期"+(c.get(Calendar.DAY_OF_WEEK)-1));
-					newsDetails.setOrder(-1);
-					newsDetails.setCreateTime(curDate);
-					newsDetailsDao.insert(newsDetails);
-					newsDetails.setOrder(0);
-					newsDetails.setContent("在这里，60秒读懂世界！");
-					newsDetailsDao.insert(newsDetails);
-					for(int i=0;i<conts.length;i++) {
-						newsDetails.setOrder(i+1);
-						newsDetails.setContent(conts[i]);
-						newsDetailsDao.insert(newsDetails);
+			if(MsgType.TEXT.equals(msg.getMsgType())){
+				resp.setContent("功能待开发");
+			}else if(MsgType.IMAGE.equals(msg.getMsgType())){
+				//调百度图片识别接口
+				GeneralBasicRespDto generalBasicRespDto = baiDuPicRecognizeUtil.recognizePic(msg.getPicUrl());
+				System.out.println(generalBasicRespDto);
+				List<WordResultDto> list = generalBasicRespDto.getWordsResult();
+				for(WordResultDto wordResult : list){
+					if(wordResult.getWords().contains("券码:")){
+						resp.setContent(wordResult.getWords());
 					}
-					resp.setContent("ok!");
-				}else {
-					List<NewsDetails> list = newsDetailsDao.queryCurDayNews();
-					if(null != list && list.size() > 0 ) {
-						StringBuffer sb = new StringBuffer();
-						for(NewsDetails newsDetails : list) {
-							if(newsDetails.getOrder() > 0) {
-								if(!newsDetails.getContent().contains("微语")) {
-									sb.append(newsDetails.getOrder()+"、");
-								}
-								sb.append(newsDetails.getContent()+"\n\n");
-							}else {
-								sb.append(newsDetails.getContent()+"\n");
-							}
-							
-						}
-						resp.setContent(sb.toString());
-					}else {
-						resp.setContent("请稍后再试！！！");
-					}
-					
 				}
 			}
+			
 		}
 		log.info("resp:"+resp.getContent());
 		resp.setToUserName(msg.getFromUserName());
@@ -147,23 +114,5 @@ public class WeiXinServiceImpl implements WeiXinService {
 		return false;
 	}
 
-
-	/*public static void main(String[] args) {
-		try {
-			URL url = new URL(KR36_FEED_RSS);
-			URLConnection conn = url.openConnection();
-			InputStream in = conn.getInputStream();
-			StringBuilder sb = new StringBuilder();
-			String s = null;
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			while((s=br.readLine())!=null) {
-				sb.append(s);
-			}
-			System.out.println(sb.toString());
-			News news = XmlUtils.fromXML(sb.toString(), News.class);
-			System.out.println(news.getDescription());
-		}catch(Exception e) {
-			log.error("error happen",e);
-		}
-	}*/
+   
 }

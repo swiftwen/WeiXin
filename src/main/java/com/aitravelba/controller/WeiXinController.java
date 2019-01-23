@@ -2,8 +2,6 @@ package com.aitravelba.controller;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,11 +21,7 @@ import com.aitravelba.dto.req.TextMessageReqDto;
 import com.aitravelba.dto.resp.TextMessageRespDto;
 import com.aitravelba.pojo.weixin.NewsDetails;
 import com.aitravelba.service.WeiXinService;
-import com.aitravelba.util.LinkedHashMapCache;
 import com.aitravelba.util.WeiXinValidationUtil;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 /**
  * 
  * @desc 微信服务controller
@@ -43,21 +36,20 @@ public class WeiXinController extends BaseController {
 	@Autowired
 	private WeiXinService weiXinService;
 	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
-	@Autowired
 	private NewsDetailsDao newsDetailsDao;
 	
-	
-	private LoadingCache<Long, AtomicLong> counter =  CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.SECONDS).build(new CacheLoader<Long, AtomicLong>() {
+	//@Autowired
+	//private RedisTemplate<String, String> redisTemplate;
+
+	/*private LoadingCache<Long, AtomicLong> counter =  CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.SECONDS).build(new CacheLoader<Long, AtomicLong>() {
         @Override
         public AtomicLong load(Long seconds) throws Exception {
             return new AtomicLong(0);
         }
-    });
+    });*/
 	
-	public static long permit = 2;
-	
-	private LinkedHashMapCache<Long,AtomicLong> mapCache = new LinkedHashMapCache<Long,AtomicLong>(3);
+	//public static long permit = 2;
+	//private LinkedHashMapCache<Long,AtomicLong> mapCache = new LinkedHashMapCache<Long,AtomicLong>(3);
 	
 	@RequestMapping(value = "/check",produces = "application/xml")
 	@ResponseBody
@@ -98,14 +90,14 @@ public class WeiXinController extends BaseController {
 	@ResponseBody
     public String checkTest(HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
 		//得到当前秒
-        long currentSeconds = System.currentTimeMillis() / 1000;
+        //long currentSeconds = System.currentTimeMillis() / 1000;
         
         /*if(counter.get(currentSeconds).incrementAndGet() > permit) {
             return "访问速率过快";
         }*/
         
-        AtomicLong v = mapCache.get(currentSeconds);
+        //AtomicLong v = mapCache.get(currentSeconds);
         
-		return null;
+		return "ok";
     }
 }

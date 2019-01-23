@@ -5,7 +5,7 @@ package com.aitravelba.common;
  * @Author wenpeng
  * @2017年10月11日 下午6:02:26
  */
-public class MsgType {
+public interface MsgType {
 
 	String TEXT = "text";
 	String IMAGE = "image";
