@@ -17,7 +17,6 @@ public class BaseResponse<T> implements Serializable {
 
     private String            msg;
     private int               code;
-    private int               subCode;
     private T                 data;
 
     public static class Empty {
@@ -30,13 +29,6 @@ public class BaseResponse<T> implements Serializable {
 
     public BaseResponse(int code, String msg, T data) {
         this.code = code;
-        this.msg = msg;
-        this.data = data;
-    }
-
-    public BaseResponse(int code, int subCode, String msg, T data) {
-        this.code = code;
-        this.subCode = subCode;
         this.msg = msg;
         this.data = data;
     }
@@ -55,14 +47,6 @@ public class BaseResponse<T> implements Serializable {
 
     public void setCode(int code) {
         this.code = code;
-    }
-
-    public int getSubCode() {
-        return subCode;
-    }
-
-    public void setSubCode(int subCode) {
-        this.subCode = subCode;
     }
 
     public T getData() {
@@ -95,12 +79,6 @@ public class BaseResponse<T> implements Serializable {
 
     }
 
-    @Override
-    public String toString() {
-        return "BaseResponse{" + "msg='" + msg + '\'' + ", code=" + code + ", subCode=" + subCode
-                + ", data=" + data + '}';
-    }
-
     public BaseResponse() {
     }
 
@@ -124,4 +102,10 @@ public class BaseResponse<T> implements Serializable {
         this.msg = ResponseCode.SUCCESS.getMsg();
         this.setData(data);
     }
+
+	@Override
+	public String toString() {
+		return "BaseResponse [msg=" + msg + ", code=" + code + ", data=" + data + "]";
+	}
+    
 }
