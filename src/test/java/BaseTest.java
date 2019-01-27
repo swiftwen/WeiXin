@@ -15,7 +15,7 @@ import com.aitravelba.AppLauncher;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AppLauncher.class)
 @Transactional
-@Rollback
+@Rollback(value=false)
 public abstract class BaseTest {
 
   

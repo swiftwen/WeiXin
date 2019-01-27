@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aitravelba.orm.wechat.SmOrderMapper">
+  <resultMap id="BaseResultMap" type="com.aitravelba.pojo.wechat.SmOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="voucher_id" jdbcType="BIGINT" property="voucherId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="voucher_no" jdbcType="VARCHAR" property="voucherNo" />
+    <result column="voucher_url" jdbcType="VARCHAR" property="voucherUrl" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+   <sql id="Base_Column_List" >
+    id, user_id, open_id, voucher_id, description, voucher_no, voucher_url, price, status, 
+    remark, create_time, update_time
+  </sql>
+  <select id="orderList" resultMap="BaseResultMap">
+     select * from sm_order
+     where 1=1
+     <if test="openId != null and openId != '' ">
+         AND open_id = #{openId}
+     </if>
+     <if test="status != null">
+         AND `status` = #{status}
+     </if>
+     <if test="voucherNo != null and voucherNo != '' ">
+         AND voucherNo like concat('%',#{voucherNo},'%');
+     </if>
+     <if test="createTime != null">
+         AND DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_FORMAT(#{createTime},'%Y-%m-%d')
+     </if>
+     order by id desc
+     <if test="start != null and size != null">
+         limit #{start}, #{size}
+     </if>
+  </select>
+  <select id="countOrderList" resultType="java.lang.Integer">
+     select count(1) from sm_order
+     where 1=1
+     <if test="openId != null and openId != '' ">
+         AND open_id = #{openId}
+     </if>
+     <if test="status != null">
+         AND `status` = #{status}
+     </if>
+     <if test="voucherNo != null and voucherNo != '' ">
+         AND voucherNo like concat('%',#{voucherNo},'%');
+     </if>
+      <if test="createTime != null">
+         AND DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_FORMAT(#{createTime},'%Y-%m-%d')
+     </if>
+  </select>
+   <insert id="insert" parameterType="com.aitravelba.pojo.wechat.SmOrder" >
+    insert into sm_order (id, user_id, open_id, 
+      voucher_id, description, voucher_no, 
+      voucher_url, price, status, 
+      remark, create_time, update_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{openId,jdbcType=VARCHAR}, 
+      #{voucherId,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR}, #{voucherNo,jdbcType=VARCHAR}, 
+      #{voucherUrl,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, #{status,jdbcType=TINYINT}, 
+      #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.aitravelba.pojo.wechat.SmOrder" >
+    insert into sm_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="voucherId != null" >
+        voucher_id,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="voucherNo != null" >
+        voucher_no,
+      </if>
+      <if test="voucherUrl != null" >
+        voucher_url,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="voucherId != null" >
+        #{voucherId,jdbcType=BIGINT},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="voucherNo != null" >
+        #{voucherNo,jdbcType=VARCHAR},
+      </if>
+      <if test="voucherUrl != null" >
+        #{voucherUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

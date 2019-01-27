@@ -3,7 +3,11 @@ package com.aitravelba.service.impl;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,11 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aitravelba.common.MsgType;
-import com.aitravelba.dao.weixin.NewsDetailsDao;
 import com.aitravelba.dto.req.TextMessageReqDto;
 import com.aitravelba.dto.resp.TextMessageRespDto;
 import com.aitravelba.dto.resp.baidu.GeneralBasicRespDto;
 import com.aitravelba.dto.resp.baidu.WordResultDto;
+import com.aitravelba.orm.wechat.SmVoucherMapper;
+import com.aitravelba.pojo.wechat.SmVoucherEx;
 import com.aitravelba.service.WeiXinService;
 import com.aitravelba.util.BaiDuPicRecognizeUtil;
 /**
@@ -30,13 +35,14 @@ import com.aitravelba.util.BaiDuPicRecognizeUtil;
 @Service("weiXinService")
 public class WeiXinServiceImpl implements WeiXinService {
 
-	private static final Logger log= LoggerFactory.getLogger(WeiXinServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(WeiXinServiceImpl.class);
 	//private static final String KR36_FEED_RSS = "http://36kr.com/feed";
-	@Autowired
-	private NewsDetailsDao newsDetailsDao;
 	
 	@Autowired
 	private BaiDuPicRecognizeUtil baiDuPicRecognizeUtil;
+	
+	@Autowired
+	private SmVoucherMapper voucherMapper;
 	
 	@Override
 	public void serverInit(HttpServletResponse response,String echostr) {
@@ -46,7 +52,7 @@ public class WeiXinServiceImpl implements WeiXinService {
 			pw.println(echostr);
 			pw.close();
 		}catch(IOException e) {
-			log.error("get PrintWriter from response fail",e);
+			logger.error("get PrintWriter from response fail",e);
 		}
 	}
 
@@ -65,13 +71,31 @@ public class WeiXinServiceImpl implements WeiXinService {
 				resp.setContent("谢谢你的关注♪（＾∀＾●）ﾉｼ （●´∀｀）♪");
 			}else if("unsubscribe".equals(msg.getEvent())) {
 				//TODO 取消关注处理
+				
 			}else if("CLICK".equals(msg.getEvent())){
 				//点击事件
 				System.out.println(msg.getEventKey());
-				resp.setContent("中信：\n27.5收中信大杯星巴克\n23收中信必胜客30\n33收中信呷哺50（周三周六11点5折友券）\n65收中信小辉哥120（周三周六11点5折友券）上海\n22收中杯星巴克\n18收中信9元享看\n60收汇丰银行电影");
+				Map<String, Object> params = new HashMap<String, Object>();
+				List<SmVoucherEx> voucherList = voucherMapper.voucherList(params);
+				StringBuffer content = new StringBuffer();
+				Set<String> cats = new HashSet<String>();
+				if(null != voucherList && voucherList.size() > 0){
+					for(SmVoucherEx voucher : voucherList){
+						if(!cats.contains(voucher.getCatTitle())){
+							content.append(voucher.getCatTitle());
+							content.append(":\n");
+							cats.add(voucher.getCatTitle());
+						}
+						content.append(voucher.getPrice());
+						content.append("收");
+						content.append(voucher.getVoucherTitle());
+						content.append("\n");
+					}
+				}
+				resp.setContent(content.toString());
 			}else {
 				//TODO 其他事件处理
-				log.info("取消关注");
+				logger.info("取消关注");
 			}
 		}else { //其他消息
 			//处理微信公众号回复内容
@@ -99,7 +123,7 @@ public class WeiXinServiceImpl implements WeiXinService {
 			}
 			
 		}
-		log.info("resp:"+resp.getContent());
+		logger.info("resp:"+resp.getContent());
 		resp.setToUserName(msg.getFromUserName());
 		resp.setFromUserName(msg.getToUserName());
 		resp.setCreateTime(new Date());
@@ -107,7 +131,7 @@ public class WeiXinServiceImpl implements WeiXinService {
 		return resp;
 	}
 	
-	private boolean isThirdApp(String content) {
+	/*private boolean isThirdApp(String content) {
 		if(null == content || content.trim().length() == 0) {
 			return false;
 		}
@@ -126,6 +150,6 @@ public class WeiXinServiceImpl implements WeiXinService {
 		}
 		return false;
 	}
-
+*/
    
 }
