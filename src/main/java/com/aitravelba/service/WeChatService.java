@@ -2,6 +2,7 @@ package com.aitravelba.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aitravelba.common.resp.BaseResponse;
 import com.aitravelba.dto.req.wechat.OrderListReqDto;
 import com.aitravelba.dto.req.wechat.QueryPayInfoReqDto;
 import com.aitravelba.dto.req.wechat.RegisterUserReqDto;
@@ -68,5 +69,5 @@ public interface WeChatService {
 	 * @param code
 	 * @return
 	 */
-	AuthRespDto auth(String code);
+	BaseResponse<AuthRespDto> auth(String code);
 }

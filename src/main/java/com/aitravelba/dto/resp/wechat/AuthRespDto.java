@@ -24,8 +24,15 @@ public class AuthRespDto implements Serializable{
 	@JSONField(name="access_token")
 	private String accessToken;
 	
+	@JSONField(name="refresh_token")
+	private String refreshToken;
+	
 	private String scope;
 
 	@JSONField(name="expires_in")
 	private Long expiresIn;
+	
+	private String errcode;
+	
+	private String errmsg;
 }

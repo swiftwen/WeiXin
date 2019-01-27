@@ -148,8 +148,7 @@ public class WeChatController extends BaseController {
     public BaseResponse<AuthRespDto> auth(@RequestParam("code") String code) {
         logger.info("进入验证");
         logger.info("code={}", code);
-        AuthRespDto resp =  weChatService.auth(code);
-        return new BaseResponse<AuthRespDto>(resp);
+        return weChatService.auth(code);
     }
 
 }

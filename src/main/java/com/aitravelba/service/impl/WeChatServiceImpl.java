@@ -22,6 +22,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aitravelba.common.req.PageQueryReq;
+import com.aitravelba.common.resp.BaseResponse;
+import com.aitravelba.common.resp.ResponseCode;
 import com.aitravelba.dto.req.wechat.OrderListReqDto;
 import com.aitravelba.dto.req.wechat.QueryPayInfoReqDto;
 import com.aitravelba.dto.req.wechat.RegisterUserReqDto;
@@ -348,9 +350,10 @@ public class WeChatServiceImpl implements WeChatService {
 	}
 
 	@Override
-	public AuthRespDto auth(String code) {
+	public BaseResponse<AuthRespDto> auth(String code) {
 		logger.info("进入验证");
         logger.info("code={}", code);
+        BaseResponse<AuthRespDto> baseResp = new BaseResponse<AuthRespDto>();
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxef77eaf24420a6c6&secret=867377bf5bdf98b6edb97f6a66bb1d17&code=" + code + "&grant_type=authorization_code";
         RestTemplate restTemplate = new RestTemplate();
         AuthRespDto resp = null;
@@ -359,8 +362,14 @@ public class WeChatServiceImpl implements WeChatService {
             resp = JSONObject.parseObject(jsonStr, AuthRespDto.class);
         }catch(Exception e){
         	logger.error("wechat auth,get access token error", e);
+        	baseResp.setCode(ResponseCode.FAIL.getCode());
+        	baseResp.setMsg("system error");
         }
-        return resp;
+        if(null != resp && StringUtils.isNotBlank(resp.getErrmsg())){
+        	baseResp.setCode(ResponseCode.FAIL.getCode());
+        	baseResp.setMsg(resp.getErrmsg());
+        }
+        return new BaseResponse<AuthRespDto>(resp);
 	}
 
 	
