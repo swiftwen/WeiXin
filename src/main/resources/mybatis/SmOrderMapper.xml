@@ -31,10 +31,13 @@
          AND `status` = #{status}
      </if>
      <if test="voucherNo != null and voucherNo != '' ">
-         AND voucherNo like concat('%',#{voucherNo},'%');
+         AND voucher_no like concat('%',#{voucherNo},'%')
      </if>
-     <if test="createTime != null">
-         AND DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_FORMAT(#{createTime},'%Y-%m-%d')
+     <if test="startTime != null">
+         AND DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+     </if>
+     <if test="endTime != null">
+         AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
      </if>
      order by id desc
      <if test="start != null and size != null">
@@ -51,10 +54,13 @@
          AND `status` = #{status}
      </if>
      <if test="voucherNo != null and voucherNo != '' ">
-         AND voucherNo like concat('%',#{voucherNo},'%');
+         AND voucher_no like concat('%',#{voucherNo},'%')
      </if>
-      <if test="createTime != null">
-         AND DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_FORMAT(#{createTime},'%Y-%m-%d')
+       <if test="startTime != null">
+         AND DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+     </if>
+     <if test="endTime != null">
+         AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
      </if>
   </select>
    <insert id="insert" parameterType="com.aitravelba.pojo.wechat.SmOrder" >
@@ -148,4 +154,9 @@
       </if>
     </trim>
   </insert>
+  <update id="backVoucher">
+       update sm_order
+       set `status` = -3
+       where open_id = #{openId} and voucher_no = #{voucherNo}
+  </update>
 </mapper>

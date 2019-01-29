@@ -3,6 +3,7 @@ package com.aitravelba.service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aitravelba.common.resp.BaseResponse;
+import com.aitravelba.dto.req.wechat.BackVoucherReqDto;
 import com.aitravelba.dto.req.wechat.OrderListReqDto;
 import com.aitravelba.dto.req.wechat.QueryPayInfoReqDto;
 import com.aitravelba.dto.req.wechat.RegisterUserReqDto;
@@ -52,6 +53,14 @@ public interface WeChatService {
 	 * @return
 	 */
 	boolean submitVoucher(String openId, Long voucherId, MultipartFile file, String voucherNo);
+	/**
+	 * 票据撤销
+	 * @param openId
+	 * @param voucherId
+	 * @return
+	 */
+	boolean backVoucher(BackVoucherReqDto req);
+	
 	/**
 	 * 注册用户
 	 * @param req

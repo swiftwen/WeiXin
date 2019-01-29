@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.aitravelba.common.req.PageQueryReq;
 import com.aitravelba.common.resp.BaseResponse;
 import com.aitravelba.common.resp.ResponseCode;
+import com.aitravelba.dto.req.wechat.BackVoucherReqDto;
 import com.aitravelba.dto.req.wechat.OrderListReqDto;
 import com.aitravelba.dto.req.wechat.QueryPayInfoReqDto;
 import com.aitravelba.dto.req.wechat.RegisterUserReqDto;
@@ -53,7 +54,7 @@ import com.aitravelba.pojo.wechat.SmVoucherEx;
 import com.aitravelba.service.WeChatService;
 import com.aitravelba.util.BaiDuPicRecognizeUtil;
 import com.aitravelba.util.DateUtil;
-import com.aitravelba.util.HttpUtil;
+import com.aitravelba.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
 /**
  * 
@@ -86,14 +87,14 @@ public class WeChatServiceImpl implements WeChatService {
 	@Autowired
 	private BaiDuPicRecognizeUtil baiDuPicRecognizeUtil;
 	
-	@Autowired
-	private HttpUtil httpUtil;
-	
 	@Value("${PAY_INFO_PATH}")
 	private String PAY_INFO_PATH;
 	
 	@Value("${VOUCHER_PATH}")
 	private String VOUCHER_PATH;
+	
+	@Value("${DOWNLOAD_PREFIX}")
+	private String DOWNLOAD_PREFIX;
 	
 	@Override
 	public OrderListRespDto orderList(OrderListReqDto req) {
@@ -110,11 +111,14 @@ public class WeChatServiceImpl implements WeChatService {
 		if(null != req.getStatus()){
 			params.put("status", req.getStatus());
 		}
-		if(null != req.getCreateTime()){
-			Date createTime = new Date(req.getCreateTime());
-			params.put("createTime", createTime);
+		if(null != req.getStartTime()){
+			Date startTime = new Date(req.getStartTime());
+			params.put("startTime", startTime);
 		}
-		
+		if(null != req.getEndTime()){
+			Date endTime = new Date(req.getEndTime());
+			params.put("endTime", endTime);
+		}
 		int total = orderMapper.countOrderList(params);
 		
 		if(null != req.getPageNum() && null != req.getPageSize()){
@@ -182,13 +186,13 @@ public class WeChatServiceImpl implements WeChatService {
 		if(null != file){
 			// 上传文件
 			try {
-				File dir = new File(VOUCHER_PATH);
+				File dir = new File(PAY_INFO_PATH);
 				if(!dir.exists()){
 					dir.mkdirs();
 				}
 				String fileName = file.getOriginalFilename();
 				fileName = alipayNo +"."+fileName.split("\\.")[1];
-				File targetFile = new File(dir + fileName);
+				File targetFile = new File(PAY_INFO_PATH + fileName);
 				if(!targetFile.exists()){
         			targetFile.createNewFile();
         		}
@@ -202,7 +206,7 @@ public class WeChatServiceImpl implements WeChatService {
                 }
 				fos.close();
 				fos.close();
-				alipayUrl = VOUCHER_PATH+fileName;
+				alipayUrl = DOWNLOAD_PREFIX+"alipay/"+fileName;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -211,8 +215,7 @@ public class WeChatServiceImpl implements WeChatService {
 		payInfo.setAlipayNo(alipayNo);
 		payInfo.setAlipayUrl(alipayUrl);
 		payInfo.setOpenId(openId);
-		payInfoMapper.saveOrUpdatePayInfo(payInfo);
-		return null;
+		return payInfoMapper.saveOrUpdatePayInfo(payInfo);
 	}
 
 	@Transactional
@@ -259,7 +262,7 @@ public class WeChatServiceImpl implements WeChatService {
 			//前端未传券码，开启图片识别功能
 			if(StringUtils.isBlank(voucherNo)){
 				//http://47.106.206.152/WeiXin/files/111.jpg
-				String imgUrl = "http://47.106.206.152/WeiXin/files/" + fileName;
+				String imgUrl = DOWNLOAD_PREFIX + fileName;
 				GeneralBasicRespDto generalBasicRespDto = baiDuPicRecognizeUtil.recognizePic(imgUrl);
 			    if(null != generalBasicRespDto){
 			    	List<WordResultDto> wordList = generalBasicRespDto.getWordsResult();
@@ -291,6 +294,19 @@ public class WeChatServiceImpl implements WeChatService {
 		order.setVoucherUrl(dirPath+fileName);
 		order.setPrice(todayPrice.getPrice());
 		orderMapper.insertSelective(order);
+		return true;
+	}
+	
+	
+
+	@Override
+	public boolean backVoucher(BackVoucherReqDto req) {
+		try{
+			orderMapper.backVoucher(req.getOpenId(), req.getVoucherNo());
+		}catch(Exception e){
+			logger.error("back voucher error", e);
+			return false;
+		}
 		return true;
 	}
 
@@ -369,7 +385,7 @@ public class WeChatServiceImpl implements WeChatService {
         	baseResp.setCode(ResponseCode.FAIL.getCode());
         	baseResp.setMsg(resp.getErrmsg());
         }
-        return new BaseResponse<AuthRespDto>(resp);
+        return ResponseUtil.buildResp(resp);
 	}
 
 	

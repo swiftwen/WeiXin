@@ -3,6 +3,8 @@ package com.aitravelba.orm.wechat;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.aitravelba.pojo.wechat.SmOrder;
 
 public interface SmOrderMapper{
@@ -18,4 +20,11 @@ public interface SmOrderMapper{
 	int insert(SmOrder record);
 
     int insertSelective(SmOrder record);
+    /**
+     * 票据撤销
+     * @param openId
+     * @param voucherId
+     * @return
+     */
+    Integer backVoucher(@Param("openId") String openId,@Param("voucherNo") String voucherNo);
 }

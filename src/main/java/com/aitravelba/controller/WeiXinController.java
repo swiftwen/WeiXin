@@ -1,6 +1,5 @@
 package com.aitravelba.controller;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.aitravelba.dao.weixin.NewsDetailsDao;
+import com.aitravelba.common.ConfigIdType;
 import com.aitravelba.dto.req.TextMessageReqDto;
 import com.aitravelba.dto.resp.TextMessageRespDto;
-import com.aitravelba.pojo.weixin.NewsDetails;
+import com.aitravelba.pojo.wechat.Config;
+import com.aitravelba.service.ConfigService;
 import com.aitravelba.service.WeiXinService;
 import com.aitravelba.util.WeiXinValidationUtil;
 /**
@@ -36,7 +36,7 @@ public class WeiXinController extends BaseController {
 	@Autowired
 	private WeiXinService weiXinService;
 	@Autowired
-	private NewsDetailsDao newsDetailsDao;
+	private ConfigService configService;
 	
 	//@Autowired
 	//private RedisTemplate<String, String> redisTemplate;
@@ -66,24 +66,18 @@ public class WeiXinController extends BaseController {
         	
         	if(checkApprove) {  //微信服务器接入校验
         		log.info("校验成功");
-        		//weiXinService.serverInit(response,echostr);
-        	    return weiXinService.acceptMsg(request, response,req);
+        		Config config = configService.selectByConfigId(ConfigIdType.INIT_CHECK);
+        		if(null == config || "0".equals(config.getConfig())){
+        			return weiXinService.acceptMsg(request, response,req);
+        		}else{
+        			weiXinService.serverInit(response,echostr);
+        		}
+        		
         	}else {
         		log.info("校验失败");
         	}
         }
         return null;
-    }
-	
-	@RequestMapping(value = "/queryCurDayNews")
-	@ResponseBody
-    public String queryCurDayNews(HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
-		
-		List<NewsDetails> list = newsDetailsDao.queryCurDayNews();
-        for(NewsDetails cur : list) {
-        	System.out.println(cur);
-        }
-		return null;
     }
 	
 	@RequestMapping(value = "/testRate")

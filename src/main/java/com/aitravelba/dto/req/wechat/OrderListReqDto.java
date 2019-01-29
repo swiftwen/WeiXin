@@ -25,14 +25,16 @@ public class OrderListReqDto extends PageQueryReq implements Serializable{
 	@ApiModelProperty(value = "微信openid")
 	private String openId;
 	
-	@ApiModelProperty(value = "订单状态（1：有效，-1：无效，0：核验中,不传查所有）")
+	@ApiModelProperty(value = "订单状态（1：有效，-1：无效，0：核验中,-2:未验）")
 	private Byte status;
 	
 	@ApiModelProperty(value = "券码号")
 	private String voucherNo;
 	
-	@ApiModelProperty(value = "订单时间（时间戳）")
-	private Long createTime;
+	@ApiModelProperty(value = "订单开始时间（时间戳）")
+	private Long startTime;
 	
+	@ApiModelProperty(value = "订单结束时间（时间戳）")
+	private Long endTime;
 
 }

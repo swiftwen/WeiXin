@@ -26,6 +26,7 @@ import com.aitravelba.orm.wechat.SmVoucherMapper;
 import com.aitravelba.pojo.wechat.SmVoucherEx;
 import com.aitravelba.service.WeiXinService;
 import com.aitravelba.util.BaiDuPicRecognizeUtil;
+import com.aitravelba.util.DateUtil;
 /**
  * 
  * @desc 微信服务器处理service
@@ -77,7 +78,8 @@ public class WeiXinServiceImpl implements WeiXinService {
 				System.out.println(msg.getEventKey());
 				Map<String, Object> params = new HashMap<String, Object>();
 				List<SmVoucherEx> voucherList = voucherMapper.voucherList(params);
-				StringBuffer content = new StringBuffer();
+				StringBuffer content = new StringBuffer(DateUtil.formatDate(new Date(), DateUtil.SP1));
+				content.append("\n");
 				Set<String> cats = new HashSet<String>();
 				if(null != voucherList && voucherList.size() > 0){
 					for(SmVoucherEx voucher : voucherList){

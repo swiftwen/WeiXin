@@ -1,17 +1,22 @@
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.aitravelba.common.ConfigIdType;
 import com.aitravelba.dto.req.wechat.OrderListReqDto;
 import com.aitravelba.dto.req.wechat.RegisterUserReqDto;
 import com.aitravelba.dto.req.wechat.VoucherListReqDto;
 import com.aitravelba.dto.resp.wechat.OrderListRespDto;
 import com.aitravelba.dto.resp.wechat.VoucherListRespDto;
+import com.aitravelba.pojo.wechat.Config;
+import com.aitravelba.service.ConfigService;
 import com.aitravelba.service.WeChatService;
 
 public class WeChatTest extends BaseTest{
 
 	@Autowired
 	private WeChatService weChatService;
+	@Autowired
+	private ConfigService configService;
 	
 	@Test
 	public void orderList()throws Exception{
@@ -48,5 +53,14 @@ public class WeChatTest extends BaseTest{
 		req.setSex((byte)1);
 		req.setHeadImgUrl("aa");
 		weChatService.register(req);
+	}
+	@Test
+	public void queryConfigTest()throws Exception{
+		Config config = configService.selectByConfigId(ConfigIdType.INIT_CHECK);
+		if(null == config || "0".equals(config.getConfig())){
+			System.out.println(config.getConfig());
+		}else{
+			System.out.println("*****************");
+		}
 	}
 }

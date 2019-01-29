@@ -6,4 +6,8 @@ public interface SmUserMapper{
 	
 	boolean insertSelective(SmUser user); 
 	
+	SmUser selectByPrimaryKey(Long id);
+	
+	SmUser selectByOpenId(String openId);
+	
 }
