@@ -1,5 +1,7 @@
 package com.aitravelba.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.aitravelba.common.resp.BaseResponse;
 import com.aitravelba.common.resp.ResponseCode;
@@ -32,6 +36,7 @@ import com.aitravelba.dto.resp.wechat.OrderListRespDto;
 import com.aitravelba.dto.resp.wechat.QueryNoticeRespDto;
 import com.aitravelba.dto.resp.wechat.QueryPayInfoRespDto;
 import com.aitravelba.dto.resp.wechat.SaveOrUpdatePayInfoRespDto;
+import com.aitravelba.dto.resp.wechat.UserInfoRespDto;
 import com.aitravelba.dto.resp.wechat.VoucherDetailRespDto;
 import com.aitravelba.dto.resp.wechat.VoucherListRespDto;
 import com.aitravelba.service.WeChatService;
@@ -64,6 +69,7 @@ public class WeChatController extends BaseController {
 			return new BaseResponse<OrderListRespDto>(ResponseCode.FAIL.getCode(),
 					result.getAllErrors().get(0).getDefaultMessage());
 		}
+		logger.info("orderList,req:{}",req);
 		OrderListRespDto resp = weChatService.orderList(req);
 		return ResponseUtil.buildResp(resp);
 	}
@@ -76,6 +82,7 @@ public class WeChatController extends BaseController {
 			return new BaseResponse<QueryPayInfoRespDto>(ResponseCode.FAIL.getCode(),
 					result.getAllErrors().get(0).getDefaultMessage());
 		}
+		logger.info("queryPayInfo,openId:{}",req.getOpenId());
 		QueryPayInfoRespDto resp = weChatService.queryPayInfo(req);
 		return ResponseUtil.buildResp(resp);
 	}
@@ -83,10 +90,35 @@ public class WeChatController extends BaseController {
 	@ApiOperation(value = "新增或更新收款信息" ,  notes="新增或更新收款信息")
 	@PostMapping(value = "/saveOrUpdatePayInfo")
 	public BaseResponse<SaveOrUpdatePayInfoRespDto> saveOrUpdatePayInfo(HttpServletRequest request, HttpServletResponse response,
-			@ApiParam(value = "收款二维码图片", type = "file", required = false) @RequestParam(required = false) MultipartFile file,
-			String openId, String alipayNo) {
-		
-		Integer ret = weChatService.saveOrUpdatePayInfo(openId, file, alipayNo);
+			@ApiParam(value = "收款二维码图片", type = "file", required = false) @RequestParam(required=false) String payFile,
+			@RequestParam String openId, @RequestParam String alipayNo, @RequestParam String alipayName) {
+		if(null == payFile){
+			logger.info("file is null...");
+		}else{
+			logger.info("file not null");
+		}
+		logger.info("before decode,alipayName:{}",alipayName);
+		try {
+			alipayName = URLDecoder.decode(alipayName, "utf-8");
+			//alipayName = new String(alipayName.getBytes("iso8859-1"),"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			logger.error("url decoder error", e);
+		}
+		logger.info("after decode,alipayName:{}",alipayName);
+		BaseResponse<SaveOrUpdatePayInfoRespDto> baseResp = new BaseResponse<SaveOrUpdatePayInfoRespDto>();
+		if(StringUtils.isBlank(alipayNo)){
+			baseResp.setCode(ResponseCode.FAIL.getCode());
+			baseResp.setMsg("alipayNo不能为空");
+			return baseResp;
+		}
+		if(StringUtils.isBlank(openId)){
+			baseResp.setCode(ResponseCode.FAIL.getCode());
+			baseResp.setMsg("openId不能为空");
+			return baseResp;
+		}
+		logger.info("savePayInfo,alipayNo:{},openId:{},alipayName:{}",alipayNo,openId,alipayName);
+		String remark = "";
+		Integer ret = weChatService.saveOrUpdatePayInfo(openId, payFile, alipayNo, alipayName, remark);
 		SaveOrUpdatePayInfoRespDto resp = new SaveOrUpdatePayInfoRespDto();
 		if(null == ret || ret == 0){
 			resp.setRet(false);
@@ -134,13 +166,20 @@ public class WeChatController extends BaseController {
 	@ApiOperation(value = "票据提交" ,  notes="票据提交")
 	@PostMapping(value = "/submitVoucher")
 	public BaseResponse<CommonBooleanRespDto> submitVoucher(HttpServletRequest request, HttpServletResponse response,
-			@ApiParam(value = "收款二维码图片", type = "file", required = false) @RequestParam(required = false) MultipartFile file,
-			String openId, Long voucherId, String voucherNo) {
+			@ApiParam(value = "券码图片", type = "file", required = false) @RequestParam String voucherFile,
+			@RequestParam String openId, @RequestParam Long voucherId, @RequestParam String voucherNo) {
 		logger.info("submitVoucher,openId:{},voucherId:{},voucherNo:{}",openId, voucherId, voucherNo);
-		boolean ret = weChatService.submitVoucher(openId, voucherId, file, voucherNo);
-		CommonBooleanRespDto resp = new CommonBooleanRespDto();
-		resp.setRet(ret);
-		return ResponseUtil.buildResp(resp);
+		BaseResponse<CommonBooleanRespDto> resp = new BaseResponse<CommonBooleanRespDto>();
+		CommonBooleanRespDto respDto = new CommonBooleanRespDto();
+		if(StringUtils.isBlank(voucherNo)){
+			resp.setCode(ResponseCode.FAIL.getCode());
+			resp.setMsg("券码不能为空");
+			return resp;
+		}
+		boolean ret = weChatService.submitVoucher(openId, voucherId, voucherFile, voucherNo);
+		
+		respDto.setRet(ret);
+		return ResponseUtil.buildResp(respDto);
 	}
 	
 	@ApiOperation(value = "票据撤销" ,  notes="票据撤销")
@@ -189,8 +228,18 @@ public class WeChatController extends BaseController {
 	@ApiOperation(value = "微信网页授权获取token" ,  notes="微信网页授权token")
 	@GetMapping("auth")
     public BaseResponse<AuthRespDto> auth(@RequestParam("code") String code) {
-        logger.info("进入验证,code:{}", code);
+        logger.info("auth进入验证,code:{}", code);
         return weChatService.auth(code);
     }
+	
+	
+	@ApiOperation(value = "微信查询用户信息" ,  notes="微信查询用户信息")
+	@GetMapping("getWxUserInfo")
+    public BaseResponse<UserInfoRespDto> getWxUserInfo(@RequestParam("accessToken") String accessToken,
+    		@RequestParam("openId") String openId) {
+        logger.info("getWxUserInfo,accessToken:{},openId:{}", accessToken, openId);
+        return weChatService.getWxUserInfo(accessToken, openId);
+    }
+
 
 }

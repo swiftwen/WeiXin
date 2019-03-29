@@ -35,6 +35,8 @@ public class AccountServiceImpl implements AccountService {
 		UserInfoRespDto resp = new UserInfoRespDto();
 		if(null != userInfo) {
 			BeanUtils.copyProperties(userInfo, resp);
+			resp.setNickname(userInfo.getNickName());
+			resp.setHeadimgurl(userInfo.getHeadImgUrl());
 		}
 		return resp;
 	}

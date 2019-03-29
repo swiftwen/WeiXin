@@ -12,6 +12,7 @@ import com.aitravelba.dto.resp.wechat.AuthRespDto;
 import com.aitravelba.dto.resp.wechat.OrderListRespDto;
 import com.aitravelba.dto.resp.wechat.QueryNoticeRespDto;
 import com.aitravelba.dto.resp.wechat.QueryPayInfoRespDto;
+import com.aitravelba.dto.resp.wechat.UserInfoRespDto;
 import com.aitravelba.dto.resp.wechat.VoucherListRespDto;
 
 /**
@@ -38,7 +39,7 @@ public interface WeChatService {
 	 * @param params
 	 * @return
 	 */
-	Integer saveOrUpdatePayInfo(String openId, MultipartFile file, String alipayNo);
+	Integer saveOrUpdatePayInfo(String openId, String payFile, String alipayNo, String alipayName, String remark);
 	/**
 	 * 票据列表
 	 * @param req
@@ -52,7 +53,7 @@ public interface WeChatService {
 	 * @param voucherNo
 	 * @return
 	 */
-	boolean submitVoucher(String openId, Long voucherId, MultipartFile file, String voucherNo);
+	boolean submitVoucher(String openId, Long voucherId, String voucherFile, String voucherNo);
 	/**
 	 * 票据撤销
 	 * @param openId
@@ -79,4 +80,13 @@ public interface WeChatService {
 	 * @return
 	 */
 	BaseResponse<AuthRespDto> auth(String code);
+	/**
+	 * 获取微信用户信息
+	 * @param accessToken
+	 * @param openId
+	 * @return
+	 */
+	BaseResponse<UserInfoRespDto> getWxUserInfo(String accessToken, String openId);
+	
+	
 }

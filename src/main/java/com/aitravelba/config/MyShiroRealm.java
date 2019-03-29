@@ -46,7 +46,7 @@ public class MyShiroRealm extends AuthorizingRealm{
 		if(userInfo == null){
 			return null;
 		}
-		System.out.println("----->>userInfo="+userInfo.getNickName()+"---");
+		System.out.println("----->>userInfo="+userInfo.getNickname()+"---");
 		
         //String pwd = accountService.getPwdByAccount(username);
         String pwd = openId;

@@ -37,4 +37,11 @@ public class OrderListReqDto extends PageQueryReq implements Serializable{
 	@ApiModelProperty(value = "订单结束时间（时间戳）")
 	private Long endTime;
 
+	@Override
+	public String toString() {
+		return "OrderListReqDto [openId=" + openId + ", status=" + status + ", voucherNo=" + voucherNo + ", startTime="
+				+ startTime + ", endTime=" + endTime + "]";
+	}
+
+	
 }

@@ -39,7 +39,7 @@ public class WeChatTest extends BaseTest{
 	
 	@Test
 	public void saveOrUpdatePayInfo()throws Exception{
-		weChatService.saveOrUpdatePayInfo("wenpeng",null, "15766086852");
+		//weChatService.saveOrUpdatePayInfo("wenpeng",null, "15766086852");
 	}
 	
 	@Test

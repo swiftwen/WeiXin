@@ -44,16 +44,15 @@ public class WeiXinMenuTest extends BaseTest {
 		List<BasicElement> menu2List = new ArrayList<BasicElement>();
 		BasicElement b1 = new BasicElement();
 		b1.setType("view");
-		b1.setName("订单查询");
-		b1.setUrl("https://mp.weixin.qq.com/s?__biz=Mzg4MjA5MDMzMw==&tempkey=OTkzX09YY2pRWlFpNGFTL3luZEVCeUJ2Z3hqbTREMXR2anduYjl1eFRSVUpSUEVTeDlzcUNmVThZU0dqRFVJRWJUV0dhZ010eVB3MjBzckY2NnJ0NmVMRGhqWDQ1YzBPWTRoWnk2c3Nqd2hvb0U4Y3B1Q0ZsQm95LVpzVmhQUU1kV21oMkg5Njl4WUFXcjFsQWtUSmI4Zm15cjZJTHFSVUlSMXZBcTRIQ2d%2Bfg%3D%3D&chksm=4f5d4934782ac022fde1960b5d1333a6d925cdad71041f56f320b7b64f3caf5a87db2f174493#rd");
-		
-		//BasicElement b2 = new BasicElement();
-		//b2.setType("view");
-		//b2.setName("资料/汇总");
-		//b2.setUrl("https://mp.weixin.qq.com/s?__biz=Mzg4MjA5MDMzMw==&tempkey=OTkzX09YY2pRWlFpNGFTL3luZEVCeUJ2Z3hqbTREMXR2anduYjl1eFRSVUpSUEVTeDlzcUNmVThZU0dqRFVJRWJUV0dhZ010eVB3MjBzckY2NnJ0NmVMRGhqWDQ1YzBPWTRoWnk2c3Nqd2hvb0U4Y3B1Q0ZsQm95LVpzVmhQUU1kV21oMkg5Njl4WUFXcjFsQWtUSmI4Zm15cjZJTHFSVUlSMXZBcTRIQ2d%2Bfg%3D%3D&chksm=4f5d4934782ac022fde1960b5d1333a6d925cdad71041f56f320b7b64f3caf5a87db2f174493#rd");
+		b1.setName("回收列表");
+		b1.setUrl("http://www.simuquanyi.cn/index.html#/ticketManage/recoverList");
+		BasicElement b2 = new BasicElement();
+		b2.setType("view");
+		b2.setName("订单查询");
+		b2.setUrl("http://www.simuquanyi.cn/index.html#/ticketManage/orderList");
 		
 		menu2List.add(b1);
-		//menu2List.add(b2);
+		menu2List.add(b2);
 		menu2.setSubButton(menu2List);
 		
 		

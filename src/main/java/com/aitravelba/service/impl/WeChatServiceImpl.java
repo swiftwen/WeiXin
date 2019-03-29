@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,7 @@ import com.aitravelba.dto.resp.wechat.OrderListDto;
 import com.aitravelba.dto.resp.wechat.OrderListRespDto;
 import com.aitravelba.dto.resp.wechat.QueryNoticeRespDto;
 import com.aitravelba.dto.resp.wechat.QueryPayInfoRespDto;
+import com.aitravelba.dto.resp.wechat.UserInfoRespDto;
 import com.aitravelba.dto.resp.wechat.VoucherDto;
 import com.aitravelba.dto.resp.wechat.VoucherListRespDto;
 import com.aitravelba.orm.wechat.SmNoticeMapper;
@@ -54,6 +56,7 @@ import com.aitravelba.pojo.wechat.SmVoucherEx;
 import com.aitravelba.service.WeChatService;
 import com.aitravelba.util.BaiDuPicRecognizeUtil;
 import com.aitravelba.util.DateUtil;
+import com.aitravelba.util.HttpUtil;
 import com.aitravelba.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
 /**
@@ -86,6 +89,9 @@ public class WeChatServiceImpl implements WeChatService {
 	
 	@Autowired
 	private BaiDuPicRecognizeUtil baiDuPicRecognizeUtil;
+	
+	@Autowired
+	private HttpUtil httpUtil;
 	
 	@Value("${PAY_INFO_PATH}")
 	private String PAY_INFO_PATH;
@@ -175,55 +181,128 @@ public class WeChatServiceImpl implements WeChatService {
 		if(null != payInfo){
 			resp.setAlipayNo(payInfo.getAlipayNo());
 			resp.setAlipayUrl(payInfo.getAlipayUrl());
+			resp.setAlipayName(payInfo.getAlipayName());
+			resp.setTestName(payInfo.getRemark());
 		}
 		return resp;
 	}
 	
 
 	@Override
-	public Integer saveOrUpdatePayInfo(String openId, MultipartFile file, String alipayNo) {
+	public Integer saveOrUpdatePayInfo(String openId, String payFile, String alipayNo, String alipayName, String remark) {
+		String dataPrix = "";
+        String data = "";
+        String suffix = "";
+		if(null != payFile && !payFile.contains("47.106.206.152")){
+			
+	        if(payFile == null || "".equals(payFile)){
+	            //throw new Exception("上传失败，上传图片数据为空");
+	        	logger.error("上传失败，上传图片数据为空");
+	        }else{
+	            String [] d = payFile.split("base64,");
+	            if(d != null && d.length == 2){
+	                dataPrix = d[0];
+	                data = d[1];
+	            }else{
+	               // throw new Exception("上传失败，数据不合法");
+	            	logger.error("上传失败，数据不合法");
+	            }
+	        }
+	        
+	        logger.info("对数据进行解析，获取文件名和流数据,dataPrix:{}",dataPrix);
+	        
+	        if("data:image/jpeg;".equalsIgnoreCase(dataPrix)){//data:image/jpeg;base64,base64编码的jpeg图片数据
+	            suffix = ".jpg";
+	        } else if("data:image/x-icon;".equalsIgnoreCase(dataPrix)){//data:image/x-icon;base64,base64编码的icon图片数据
+	            suffix = ".ico";
+	        } else if("data:image/gif;".equalsIgnoreCase(dataPrix)){//data:image/gif;base64,base64编码的gif图片数据
+	            suffix = ".gif";
+	        } else if("data:image/png;".equalsIgnoreCase(dataPrix)){//data:image/png;base64,base64编码的png图片数据
+	            suffix = ".png";
+	        }else{
+	            //throw new Exception("上传图片格式不合法");
+	            logger.error("上传图片格式不合法");
+	        }
+		}
+		
+		
 		String alipayUrl = "";
-		if(null != file){
+		if(null != payFile && !payFile.contains("47.106.206.152")){
 			// 上传文件
 			try {
 				File dir = new File(PAY_INFO_PATH);
 				if(!dir.exists()){
 					dir.mkdirs();
 				}
-				String fileName = file.getOriginalFilename();
-				fileName = alipayNo +"."+fileName.split("\\.")[1];
+				//String fileName = file.getOriginalFilename();
+				String fileName = alipayNo + suffix;
 				File targetFile = new File(PAY_INFO_PATH + fileName);
 				if(!targetFile.exists()){
         			targetFile.createNewFile();
         		}
-        		InputStream in = file.getInputStream();
-        		FileOutputStream fos = new FileOutputStream(targetFile, true);
-        		byte[] buf = new byte[1024];
-        		int len = 0 ;
-        		while ((len = in.read(buf)) > 0) {
-                    fos.write(buf, 0, len);
-                    fos.flush();
-                }
+				
+				byte[] bs = Base64Utils.decodeFromString(data);
+				
+        		FileOutputStream fos = new FileOutputStream(targetFile);
+                fos.write(bs, 0, bs.length);
+                fos.flush();
 				fos.close();
 				fos.close();
 				alipayUrl = DOWNLOAD_PREFIX+"alipay/"+fileName;
 			} catch (Exception e) {
+				logger.error("saveOrUpdatePayInfo upload file error", e);
 				e.printStackTrace();
 			}
+		}else{
+			alipayUrl = payFile;
 		}
 		SmPayInfo payInfo = new SmPayInfo();
 		payInfo.setAlipayNo(alipayNo);
 		payInfo.setAlipayUrl(alipayUrl);
 		payInfo.setOpenId(openId);
+		payInfo.setAlipayName(alipayName);
+		payInfo.setRemark(remark);
 		return payInfoMapper.saveOrUpdatePayInfo(payInfo);
 	}
 
 	@Transactional
 	@Override
-	public boolean submitVoucher(String openId, Long voucherId, MultipartFile file, String voucherNo) {
+	public boolean submitVoucher(String openId, Long voucherId, String voucherFile, String voucherNo) {
+		logger.info("submit voucher start...");
 		String dirPath = "";
 		String fileName = "";
-		if(null != file){
+		if(null != voucherFile){
+			String dataPrix = "";
+	        String data = "";
+	        if(voucherFile == null || "".equals(voucherFile)){
+	            //throw new Exception("上传失败，上传图片数据为空");
+	        	logger.error("上传失败，上传图片数据为空");
+	        }else{
+	            String [] d = voucherFile.split("base64,");
+	            if(d != null && d.length == 2){
+	                dataPrix = d[0];
+	                data = d[1];
+	            }else{
+	               // throw new Exception("上传失败，数据不合法");
+	            	logger.error("上传失败，数据不合法");
+	            }
+	        }
+	        
+	        logger.info("对数据进行解析，获取文件名和流数据,dataPrix:{}",dataPrix);
+	        String suffix = "";
+	        if("data:image/jpeg;".equalsIgnoreCase(dataPrix)){//data:image/jpeg;base64,base64编码的jpeg图片数据
+	            suffix = ".jpg";
+	        } else if("data:image/x-icon;".equalsIgnoreCase(dataPrix)){//data:image/x-icon;base64,base64编码的icon图片数据
+	            suffix = ".ico";
+	        } else if("data:image/gif;".equalsIgnoreCase(dataPrix)){//data:image/gif;base64,base64编码的gif图片数据
+	            suffix = ".gif";
+	        } else if("data:image/png;".equalsIgnoreCase(dataPrix)){//data:image/png;base64,base64编码的png图片数据
+	            suffix = ".png";
+	        }else{
+	            //throw new Exception("上传图片格式不合法");
+	            logger.error("上传图片格式不合法");
+	        }
+	        
 			// 上传文件
 			try {
 				dirPath = new StringBuffer(VOUCHER_PATH).append(openId).append("/").toString();
@@ -231,26 +310,29 @@ public class WeChatServiceImpl implements WeChatService {
 				if(!dir.exists()){
 					dir.mkdirs();
 				}
-				String originalFilename = file.getOriginalFilename();
+				//String originalFilename = file.getOriginalFilename();
 				StringBuffer fileNameBuffer = new StringBuffer();
 				fileNameBuffer.append(voucherId);
 				fileNameBuffer.append("_");
 				fileNameBuffer.append(UUID.randomUUID().toString());
-				fileNameBuffer.append(".");
-				fileNameBuffer.append(originalFilename.split("\\.")[1]);
+				//fileNameBuffer.append(".");
+				//fileNameBuffer.append(originalFilename.split("\\.")[1]);
+				fileNameBuffer.append(suffix);
 				fileName = fileNameBuffer.toString();
 				File targetFile = new File(dirPath + fileName.toString());
         		if(!targetFile.exists()){
         			targetFile.createNewFile();
         		}
-        		InputStream in = file.getInputStream();
-        		FileOutputStream fos = new FileOutputStream(targetFile, true);
-        		byte[] buf = new byte[1024];
-        		int len = 0 ;
-        		while ((len = in.read(buf)) > 0) {
-                    fos.write(buf, 0, len);
+        		byte[] bs = Base64Utils.decodeFromString(data);
+        		
+        		//InputStream in = file.getInputStream();
+        		FileOutputStream fos = new FileOutputStream(targetFile);
+        		//byte[] buf = new byte[1024];
+        		//int len = 0 ;
+        		//while ((len = in.read(buf)) > 0) {
+                    fos.write(bs, 0, bs.length);
                     fos.flush();
-                }
+                //}
 				fos.close();
 			} catch (Exception e) {
 				logger.error("submit voucher error", e);
@@ -262,7 +344,7 @@ public class WeChatServiceImpl implements WeChatService {
 			//前端未传券码，开启图片识别功能
 			if(StringUtils.isBlank(voucherNo)){
 				//http://47.106.206.152/WeiXin/files/111.jpg
-				String imgUrl = DOWNLOAD_PREFIX + fileName;
+				String imgUrl = DOWNLOAD_PREFIX + "voucher/" +openId +"/" +fileName;
 				GeneralBasicRespDto generalBasicRespDto = baiDuPicRecognizeUtil.recognizePic(imgUrl);
 			    if(null != generalBasicRespDto){
 			    	List<WordResultDto> wordList = generalBasicRespDto.getWordsResult();
@@ -286,12 +368,17 @@ public class WeChatServiceImpl implements WeChatService {
 		SmTodayPrice todayPrice = todayPriceMapper.selectByVoucherId(voucherId);
 		
 		//创建订单
+		logger.info("create order start,openId:{}", openId);
 		SmOrder order = new SmOrder();
 		order.setOpenId(openId);
 		order.setVoucherId(voucherId);
-		order.setVoucherNo(voucherNo);
+		if(StringUtils.isNotBlank(voucherNo)){
+			order.setVoucherNo(voucherNo);
+		}
 		//TODO 优化
-		order.setVoucherUrl(dirPath+fileName);
+		//order.setVoucherUrl(dirPath+fileName);
+		//alipayUrl = DOWNLOAD_PREFIX+"alipay/"+fileName;
+		order.setVoucherUrl(DOWNLOAD_PREFIX+"voucher/"+openId+"/"+fileName);
 		order.setPrice(todayPrice.getPrice());
 		orderMapper.insertSelective(order);
 		return true;
@@ -386,6 +473,36 @@ public class WeChatServiceImpl implements WeChatService {
         	baseResp.setMsg(resp.getErrmsg());
         }
         return ResponseUtil.buildResp(resp);
+	}
+
+	@Override
+	public BaseResponse<UserInfoRespDto> getWxUserInfo(String accessToken, String openId) {
+		// TODO Auto-generated method stub
+		BaseResponse<UserInfoRespDto> baseResp = new BaseResponse<UserInfoRespDto>();
+		String url = "https://api.weixin.qq.com/sns/userinfo?access_token="+accessToken+"&openid="+openId+"&lang=zh_CN";
+		Map<String, String> headers = new HashMap<String, String>();
+		String retJson = httpUtil.httpGet(url, headers);
+		logger.info("get wechat user info ,retJson:{}", retJson);
+		UserInfoRespDto wxUserInfo = JSONObject.parseObject(retJson, UserInfoRespDto.class);
+		if(StringUtils.isNotBlank(wxUserInfo.getErrmsg())){
+			baseResp.setCode(ResponseCode.FAIL.getCode());
+        	baseResp.setMsg(wxUserInfo.getErrmsg());
+		}else{
+			baseResp.setData(wxUserInfo);
+		}
+		//注册用户
+		RegisterUserReqDto registerUserReqDto = new RegisterUserReqDto();
+		BeanUtils.copyProperties(wxUserInfo, registerUserReqDto);
+		registerUserReqDto.setHeadImgUrl(wxUserInfo.getHeadimgurl());
+		registerUserReqDto.setOpenId(wxUserInfo.getOpenid());
+		registerUserReqDto.setNickName(wxUserInfo.getNickname());
+		try{
+			register(registerUserReqDto);
+		}catch(Exception e){
+			logger.error("register user error", e);
+		}
+		
+		return baseResp;
 	}
 
 	

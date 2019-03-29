@@ -21,6 +21,10 @@ public class QueryPayInfoRespDto implements Serializable{
 	private String alipayNo;
 	@ApiModelProperty(value = "支付宝收款二维码")
 	private String alipayUrl;
-
+	@ApiModelProperty(value = "支付宝收款人姓名")
+	private String alipayName;
+	
+	@ApiModelProperty(value = "testName")
+	private String testName;
 	
 }

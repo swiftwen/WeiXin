@@ -66,6 +66,7 @@ public class WeiXinServiceImpl implements WeiXinService {
 	public TextMessageRespDto sendMsg(HttpServletRequest request, HttpServletResponse response, TextMessageReqDto msg) {
 		TextMessageRespDto resp = new TextMessageRespDto();
 		//如果是事件消息
+		logger.info("message event:{}",null == msg ? "":msg.getEvent());
 		if(null!=msg.getEvent()) {
 			if("subscribe".equals(msg.getEvent())) {
 				//关注公众号处理

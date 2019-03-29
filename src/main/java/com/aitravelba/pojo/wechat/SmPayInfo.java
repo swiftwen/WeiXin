@@ -19,6 +19,10 @@ public class SmPayInfo {
      * 支付宝收款账号（手机号）
      */
     private String alipayNo;
+    /**
+     * 支付宝姓名
+     */
+    private String alipayName;
 
     /**
      * 支付宝收款账号二维码
@@ -195,6 +199,14 @@ public class SmPayInfo {
 
 	public void setOpenId(String openId) {
 		this.openId = openId;
+	}
+
+	public String getAlipayName() {
+		return alipayName;
+	}
+
+	public void setAlipayName(String alipayName) {
+		this.alipayName = alipayName;
 	}
     
     
