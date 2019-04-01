@@ -41,6 +41,18 @@ public class BaiDuPicRecognizeUtil {
         System.out.println(resp.toString());
         return resp;
 	}
+	
+	public GeneralBasicRespDto recognizePicByBinaryData(byte[] data){
+		AipOcr client = new AipOcr(APP_ID, API_KEY, SECRET_KEY);
+		// 可选：设置网络连接参数
+        client.setConnectionTimeoutInMillis(2000);
+        client.setSocketTimeoutInMillis(60000);
+        JSONObject res = client.basicGeneral(data, new HashMap<String, String>());
+        //JSONObject res = client.basicGeneralUrl(imgUrl, new HashMap<String, String>());
+        GeneralBasicRespDto resp = com.alibaba.fastjson.JSONObject.parseObject(res.toString(2), GeneralBasicRespDto.class);
+        System.out.println(resp.toString());
+        return resp;
+	}
 	/*public String getAccessToken(){
 		String accessToken = "";
 		Map<String,String> paramMap = new HashMap<String,String>();
@@ -57,7 +69,7 @@ public class BaiDuPicRecognizeUtil {
 		return accessToken;
 	}*/
 	/*public static void main(String[] args) {
-		String imgUrl = "http://mmbiz.qpic.cn/mmbiz_jpg/NEfOUO2fibNsus8bh4lib38MIwmUQl8qTeCt9zz5onHq7YvPgbPfG3uPKX5icfvYXwrVbzR0H9XW2TxtZBRu8chZg/0";
+		String imgUrl = "http://47.106.206.152/simu/files/voucher/oXf9j5y55AS6t1WGQKoNTs-yyzi0/1_5c5846b1-0d2b-4e4c-8f93-1ea2e28cfde8.jpg";
 		//new BaiDuPicRecognizeUtil().recognizePic("http://img2.imgtn.bdimg.com/it/u=3563596319,1330108801&fm=26&gp=0.jpg");
 		new BaiDuPicRecognizeUtil().recognizePic(imgUrl);
 	}*/

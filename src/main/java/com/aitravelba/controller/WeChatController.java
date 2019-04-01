@@ -144,12 +144,12 @@ public class WeChatController extends BaseController {
 	@GetMapping(value = "/voucherDetail")
 	public BaseResponse<VoucherDetailRespDto> voucherDetail(HttpServletRequest request, HttpServletResponse response,
 			Long voucherId) {
-		logger.info("backVoucher,voucherId:{}",voucherId);
+		logger.info("voucherDetail,voucherId:{}",voucherId);
 		if (null == voucherId || voucherId <= 0) {
 			return new BaseResponse<VoucherDetailRespDto>(ResponseCode.FAIL.getCode(),
 					"voucherId不能为空");
 		}
-		VoucherDetailRespDto respDto = new VoucherDetailRespDto();
+		/*VoucherDetailRespDto respDto = new VoucherDetailRespDto();
 		respDto.setPrice(27.5);
 		respDto.setTitle("星巴克大杯-中信");
 		List<String> source = new ArrayList<String>();
@@ -159,27 +159,18 @@ public class WeChatController extends BaseController {
 		source.add(s1);
 		source.add(s2);
 		source.add(s3);
-		respDto.setSource(source);
-		return new BaseResponse<VoucherDetailRespDto>(respDto);
+		respDto.setSource(source);*/
+		return new BaseResponse<VoucherDetailRespDto>(weChatService.voucherDetail(voucherId));
 	}
 
 	@ApiOperation(value = "票据提交" ,  notes="票据提交")
 	@PostMapping(value = "/submitVoucher")
 	public BaseResponse<CommonBooleanRespDto> submitVoucher(HttpServletRequest request, HttpServletResponse response,
 			@ApiParam(value = "券码图片", type = "file", required = false) @RequestParam String voucherFile,
-			@RequestParam String openId, @RequestParam Long voucherId, @RequestParam String voucherNo) {
+			@RequestParam String openId, @RequestParam Long voucherId, @RequestParam(required=false) String voucherNo) {
 		logger.info("submitVoucher,openId:{},voucherId:{},voucherNo:{}",openId, voucherId, voucherNo);
-		BaseResponse<CommonBooleanRespDto> resp = new BaseResponse<CommonBooleanRespDto>();
-		CommonBooleanRespDto respDto = new CommonBooleanRespDto();
-		if(StringUtils.isBlank(voucherNo)){
-			resp.setCode(ResponseCode.FAIL.getCode());
-			resp.setMsg("券码不能为空");
-			return resp;
-		}
-		boolean ret = weChatService.submitVoucher(openId, voucherId, voucherFile, voucherNo);
+		return weChatService.submitVoucher(openId, voucherId, voucherFile, voucherNo);
 		
-		respDto.setRet(ret);
-		return ResponseUtil.buildResp(respDto);
 	}
 	
 	@ApiOperation(value = "票据撤销" ,  notes="票据撤销")

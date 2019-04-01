@@ -13,10 +13,11 @@ public class ResponseUtil {
 		resultDto.setData(t);
 		return resultDto;
 	}
-	// public static <T> ResultDTO<T> buildErrorResp(String message) {
-	// ResultDTO<T> resultDto = new ResultDTO<T>();
-	// // resultDto.setData(t);
-	// resultDto.setMessage(message);
-	// return resultDto;
-	// }
+	public static <T> BaseResponse<T> buildDefinitionResp(T t, String msg, int code) {
+		BaseResponse<T> resultDto = new BaseResponse<T>();
+		resultDto.setData(t);
+		resultDto.setMsg(msg);
+		resultDto.setCode(code);
+		return resultDto;
+	}
 }

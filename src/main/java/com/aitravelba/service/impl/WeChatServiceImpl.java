@@ -2,13 +2,14 @@ package com.aitravelba.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.aitravelba.common.req.PageQueryReq;
 import com.aitravelba.common.resp.BaseResponse;
@@ -33,19 +33,24 @@ import com.aitravelba.dto.req.wechat.VoucherListReqDto;
 import com.aitravelba.dto.resp.baidu.GeneralBasicRespDto;
 import com.aitravelba.dto.resp.baidu.WordResultDto;
 import com.aitravelba.dto.resp.wechat.AuthRespDto;
+import com.aitravelba.dto.resp.wechat.CommonBooleanRespDto;
 import com.aitravelba.dto.resp.wechat.OrderListDto;
 import com.aitravelba.dto.resp.wechat.OrderListRespDto;
 import com.aitravelba.dto.resp.wechat.QueryNoticeRespDto;
 import com.aitravelba.dto.resp.wechat.QueryPayInfoRespDto;
 import com.aitravelba.dto.resp.wechat.UserInfoRespDto;
+import com.aitravelba.dto.resp.wechat.VoucherDetailRespDto;
 import com.aitravelba.dto.resp.wechat.VoucherDto;
 import com.aitravelba.dto.resp.wechat.VoucherListRespDto;
+import com.aitravelba.orm.wechat.RegexConfigMapper;
 import com.aitravelba.orm.wechat.SmNoticeMapper;
 import com.aitravelba.orm.wechat.SmOrderMapper;
 import com.aitravelba.orm.wechat.SmPayInfoMapper;
 import com.aitravelba.orm.wechat.SmTodayPriceMapper;
 import com.aitravelba.orm.wechat.SmUserMapper;
 import com.aitravelba.orm.wechat.SmVoucherMapper;
+import com.aitravelba.orm.wechat.VoucherDetailMapper;
+import com.aitravelba.pojo.wechat.RegexConfig;
 import com.aitravelba.pojo.wechat.SmNotice;
 import com.aitravelba.pojo.wechat.SmOrder;
 import com.aitravelba.pojo.wechat.SmPayInfo;
@@ -53,6 +58,7 @@ import com.aitravelba.pojo.wechat.SmTodayPrice;
 import com.aitravelba.pojo.wechat.SmUser;
 import com.aitravelba.pojo.wechat.SmVoucher;
 import com.aitravelba.pojo.wechat.SmVoucherEx;
+import com.aitravelba.pojo.wechat.VoucherDetailEx;
 import com.aitravelba.service.WeChatService;
 import com.aitravelba.util.BaiDuPicRecognizeUtil;
 import com.aitravelba.util.DateUtil;
@@ -86,6 +92,12 @@ public class WeChatServiceImpl implements WeChatService {
 	
 	@Autowired
 	private SmNoticeMapper noticeMapper;
+	
+	@Autowired
+	private RegexConfigMapper regexConfigMapper;
+	
+	@Autowired
+	private VoucherDetailMapper voucherDetailMapper;
 	
 	@Autowired
 	private BaiDuPicRecognizeUtil baiDuPicRecognizeUtil;
@@ -267,10 +279,14 @@ public class WeChatServiceImpl implements WeChatService {
 
 	@Transactional
 	@Override
-	public boolean submitVoucher(String openId, Long voucherId, String voucherFile, String voucherNo) {
+	public BaseResponse<CommonBooleanRespDto> submitVoucher(String openId, Long voucherId, String voucherFile, String voucherNo) {
 		logger.info("submit voucher start...");
 		String dirPath = "";
 		String fileName = "";
+		boolean ret = false;
+		CommonBooleanRespDto respDto = new CommonBooleanRespDto();
+		byte[] bs = null;
+		BaseResponse<CommonBooleanRespDto> resp = new BaseResponse<CommonBooleanRespDto>();
 		if(null != voucherFile){
 			String dataPrix = "";
 	        String data = "";
@@ -323,20 +339,16 @@ public class WeChatServiceImpl implements WeChatService {
         		if(!targetFile.exists()){
         			targetFile.createNewFile();
         		}
-        		byte[] bs = Base64Utils.decodeFromString(data);
+        		bs = Base64Utils.decodeFromString(data);
         		
-        		//InputStream in = file.getInputStream();
         		FileOutputStream fos = new FileOutputStream(targetFile);
-        		//byte[] buf = new byte[1024];
-        		//int len = 0 ;
-        		//while ((len = in.read(buf)) > 0) {
-                    fos.write(bs, 0, bs.length);
-                    fos.flush();
-                //}
+                fos.write(bs, 0, bs.length);
+                fos.flush();
 				fos.close();
 			} catch (Exception e) {
 				logger.error("submit voucher error", e);
-				return false;
+				respDto.setRet(false);
+				return ResponseUtil.buildResp(respDto);
 			}
 		}
 		//图片识别
@@ -345,13 +357,23 @@ public class WeChatServiceImpl implements WeChatService {
 			if(StringUtils.isBlank(voucherNo)){
 				//http://47.106.206.152/WeiXin/files/111.jpg
 				String imgUrl = DOWNLOAD_PREFIX + "voucher/" +openId +"/" +fileName;
-				GeneralBasicRespDto generalBasicRespDto = baiDuPicRecognizeUtil.recognizePic(imgUrl);
+				GeneralBasicRespDto generalBasicRespDto = baiDuPicRecognizeUtil.recognizePicByBinaryData(bs);
 			    if(null != generalBasicRespDto){
 			    	List<WordResultDto> wordList = generalBasicRespDto.getWordsResult();
 			    	if(null != wordList && wordList.size() > 0){
+			    		RegexConfig regexConfig = regexConfigMapper.selectByVoucherId(voucherId);
+			    		if(null == regexConfig){
+			    			//无正则，不支持图片识别提取券码
+			    			respDto.setRet(false);
+			    			return ResponseUtil.buildDefinitionResp(respDto, "此类型券码图片暂不支持自动识别，请手动输入券码", ResponseCode.FAIL.getCode());
+			    		}
+			    		Pattern p = Pattern.compile(regexConfig.getRegex().trim());
 			    		for(WordResultDto word : wordList){
-			    			if(word.getWords().startsWith("券码:")){
-			    				voucherNo = word.getWords().split(":")[1];
+			    			logger.info("word:{}",word.getWords());
+			    			Matcher m = p.matcher(word.getWords());
+			    			if(m.find()){
+			    				logger.info("券码识别成功,voucherNo:{}", word.getWords());
+			    				voucherNo = word.getWords();
 			    				break;
 			    			}
 			    		}
@@ -361,7 +383,8 @@ public class WeChatServiceImpl implements WeChatService {
 		
 		}catch(Exception e){
 			logger.error("call baidu recognize image api error", e);
-			return false;
+			respDto.setRet(false);
+			return ResponseUtil.buildResp(respDto);
 		}
 		
 	    //查询今日价格
@@ -374,14 +397,18 @@ public class WeChatServiceImpl implements WeChatService {
 		order.setVoucherId(voucherId);
 		if(StringUtils.isNotBlank(voucherNo)){
 			order.setVoucherNo(voucherNo);
+		}else{
+			respDto.setRet(false);
+			return ResponseUtil.buildDefinitionResp(respDto, "图片券码识别失败，请手动输入券码", ResponseCode.FAIL.getCode());
 		}
 		//TODO 优化
 		//order.setVoucherUrl(dirPath+fileName);
-		//alipayUrl = DOWNLOAD_PREFIX+"alipay/"+fileName;
 		order.setVoucherUrl(DOWNLOAD_PREFIX+"voucher/"+openId+"/"+fileName);
 		order.setPrice(todayPrice.getPrice());
 		orderMapper.insertSelective(order);
-		return true;
+		logger.info("create order end,openId:{}", openId);
+		respDto.setRet(true);
+		return ResponseUtil.buildResp(respDto);
 	}
 	
 	
@@ -501,9 +528,30 @@ public class WeChatServiceImpl implements WeChatService {
 		}catch(Exception e){
 			logger.error("register user error", e);
 		}
-		
 		return baseResp;
 	}
 
+	@Override
+	public VoucherDetailRespDto voucherDetail(Long voucherId) {
+		VoucherDetailRespDto resp = new VoucherDetailRespDto();
+		VoucherDetailEx voucherDetail = voucherDetailMapper.selectByVoucherId(voucherId);
+		
+		resp.setTitle(voucherDetail.getTitle());
+		resp.setPrice(voucherDetail.getPrice());
+		List<String> source = new ArrayList<String>();
+		if(StringUtils.isNotBlank(voucherDetail.getSource())){
+			String[] srcs = voucherDetail.getSource().split("###");
+			for(int i=0;i<srcs.length;i++){
+				source.add((i+1)+"、"+srcs[i]);
+			}
+		}else{
+			source.add("暂无来源描述信息");
+		}
+		resp.setSource(source);
+		
+		return resp;
+	}
+
+	
 	
 }

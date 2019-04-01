@@ -1,7 +1,5 @@
 package com.aitravelba.service;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.aitravelba.common.resp.BaseResponse;
 import com.aitravelba.dto.req.wechat.BackVoucherReqDto;
 import com.aitravelba.dto.req.wechat.OrderListReqDto;
@@ -9,10 +7,12 @@ import com.aitravelba.dto.req.wechat.QueryPayInfoReqDto;
 import com.aitravelba.dto.req.wechat.RegisterUserReqDto;
 import com.aitravelba.dto.req.wechat.VoucherListReqDto;
 import com.aitravelba.dto.resp.wechat.AuthRespDto;
+import com.aitravelba.dto.resp.wechat.CommonBooleanRespDto;
 import com.aitravelba.dto.resp.wechat.OrderListRespDto;
 import com.aitravelba.dto.resp.wechat.QueryNoticeRespDto;
 import com.aitravelba.dto.resp.wechat.QueryPayInfoRespDto;
 import com.aitravelba.dto.resp.wechat.UserInfoRespDto;
+import com.aitravelba.dto.resp.wechat.VoucherDetailRespDto;
 import com.aitravelba.dto.resp.wechat.VoucherListRespDto;
 
 /**
@@ -53,7 +53,7 @@ public interface WeChatService {
 	 * @param voucherNo
 	 * @return
 	 */
-	boolean submitVoucher(String openId, Long voucherId, String voucherFile, String voucherNo);
+	BaseResponse<CommonBooleanRespDto> submitVoucher(String openId, Long voucherId, String voucherFile, String voucherNo);
 	/**
 	 * 票据撤销
 	 * @param openId
@@ -87,6 +87,10 @@ public interface WeChatService {
 	 * @return
 	 */
 	BaseResponse<UserInfoRespDto> getWxUserInfo(String accessToken, String openId);
-	
-	
+	/**
+	 * 券码详情
+	 * @param voucherId
+	 * @return
+	 */
+	VoucherDetailRespDto voucherDetail(Long voucherId);
 }
