@@ -157,6 +157,6 @@
   <update id="backVoucher">
        update sm_order
        set `status` = -3
-       where `status` = -2 and open_id = #{openId} and voucher_no = #{voucherNo}
+       where `status` = -2 and open_id = #{openId} and id = #{id}
   </update>
 </mapper>

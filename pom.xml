@@ -56,6 +56,10 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 		</dependency>
@@ -148,6 +152,13 @@
 			<artifactId>shiro-ehcache</artifactId>
 			<version>1.2.2</version>
 		</dependency>
+		<!-- <dependency>
+			<groupId>com.huizhi</groupId>
+			<artifactId>huizhi.utils</artifactId>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/*.jar</systemPath>
+			<version>0.0.1</version>
+		</dependency> -->
 	</dependencies>
 
 	<build>

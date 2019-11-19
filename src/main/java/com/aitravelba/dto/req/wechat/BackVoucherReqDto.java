@@ -2,6 +2,8 @@ package com.aitravelba.dto.req.wechat;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import lombok.Data;
@@ -22,8 +24,10 @@ public class BackVoucherReqDto implements Serializable{
 	@NotBlank(message="openId不能为空")
 	private String openId;
 	
-	@NotBlank(message="voucherNo不能为空")
-	private String voucherNo;
+	//@NotBlank(message="voucherNo不能为空")
+	//private String voucherNo;
+	@NotNull(message="订单号不能为空")
+	private Long id;
 	
 	
 

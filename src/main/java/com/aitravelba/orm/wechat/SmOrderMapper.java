@@ -26,5 +26,5 @@ public interface SmOrderMapper{
      * @param voucherId
      * @return
      */
-    Integer backVoucher(@Param("openId") String openId,@Param("voucherNo") String voucherNo);
+    Integer backVoucher(@Param("openId") String openId,@Param("id") Long id);
 }

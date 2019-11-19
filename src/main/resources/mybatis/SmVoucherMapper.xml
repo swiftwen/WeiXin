@@ -44,6 +44,7 @@
 		JOIN sm_today_price t3 on t2.id = t3.voucher_id
 		WHERE
 		t2.`status` = 1 AND t1.`status` = 1 AND t3.`status` = 1
+		order by t1.id
 		<if test="start != null and size != null">
 			limit #{start}, #{size}
 		</if>

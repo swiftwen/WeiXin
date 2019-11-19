@@ -76,8 +76,10 @@ public class WeiXinServiceImpl implements WeiXinService {
 				
 			}else if("CLICK".equals(msg.getEvent())){
 				//点击事件
-				System.out.println(msg.getEventKey());
+				//System.out.println(msg.getEventKey());
 				Map<String, Object> params = new HashMap<String, Object>();
+				params.put("start", 0);
+				params.put("size", 10);
 				List<SmVoucherEx> voucherList = voucherMapper.voucherList(params);
 				StringBuffer content = new StringBuffer(DateUtil.formatDate(new Date(), DateUtil.SP1));
 				content.append("\n");
@@ -89,18 +91,20 @@ public class WeiXinServiceImpl implements WeiXinService {
 							content.append(":\n");
 							cats.add(voucher.getCatTitle());
 						}
-						content.append(voucher.getPrice());
-						content.append("收");
 						content.append(voucher.getVoucherTitle());
-						content.append("\n");
+						content.append("(价格：");
+						content.append(voucher.getPrice());
+						content.append(")\n");
 					}
+					content.append("<a href='http://www.simuquanyi.cn/index.html#/ticketManage/recoverList'>查看更多回收!!!</a>");
 				}
 				resp.setContent(content.toString());
 			}else {
 				//TODO 其他事件处理
-				logger.info("取消关注");
+				logger.info(msg.getEventKey()+"事件消息");
 			}
-		}else { //其他消息
+		}else { 
+			//其他消息
 			//处理微信公众号回复内容
 			if(MsgType.TEXT.equals(msg.getMsgType())){
 				//TODO 
@@ -126,7 +130,7 @@ public class WeiXinServiceImpl implements WeiXinService {
 			}
 			
 		}
-		logger.info("resp:"+resp.getContent());
+		//logger.info("resp:"+resp.getContent());
 		resp.setToUserName(msg.getFromUserName());
 		resp.setFromUserName(msg.getToUserName());
 		resp.setCreateTime(new Date());

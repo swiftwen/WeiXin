@@ -112,7 +112,7 @@ public class HttpUtil {
 		httpc.getHttpConnectionManager().getParams().setSoTimeout(5000);
 		
 		UTF8PostMethod postMethod = new UTF8PostMethod(url);
-		postMethod.setRequestHeader("Content-Type","application/json;charset=utf-8");
+		postMethod.setRequestHeader("Content-Type","application/json;charset=UTF-8");
 		if(null != headers) {
 			for(Entry entry : headers.entrySet()){
 				postMethod.addRequestHeader(entry.getKey().toString(),entry.getValue().toString());

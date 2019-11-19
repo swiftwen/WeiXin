@@ -2,8 +2,6 @@ package com.aitravelba.dto.req;
 
 import java.util.List;
 
-import com.aitravelba.dto.FirstMenuButtonDto;
-
 /**
  * 
  * @author swiftwen

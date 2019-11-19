@@ -32,7 +32,7 @@ public class Sample {
         //String path = "f://tmp//signature.jpg";
         String path = "http://mmbiz.qpic.cn/mmbiz_jpg/NEfOUO2fibNsus8bh4lib38MIwmUQl8qTeCt9zz5onHq7YvPgbPfG3uPKX5icfvYXwrVbzR0H9XW2TxtZBRu8chZg/0";
         JSONObject res = client.basicGeneralUrl(path, new HashMap<String, String>());
-        System.out.println(res.toString(2));
+        //System.out.println(res.toString(2));
         
     }
 }

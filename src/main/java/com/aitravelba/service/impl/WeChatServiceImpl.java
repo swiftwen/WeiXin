@@ -178,7 +178,6 @@ public class WeChatServiceImpl implements WeChatService {
 				
 			}
 		}
-		
 		resp.setList(respList);
 		return resp;
 	}
@@ -237,7 +236,6 @@ public class WeChatServiceImpl implements WeChatService {
 	        }
 		}
 		
-		
 		String alipayUrl = "";
 		if(null != payFile && !payFile.contains("47.106.206.152")){
 			// 上传文件
@@ -283,10 +281,10 @@ public class WeChatServiceImpl implements WeChatService {
 		logger.info("submit voucher start...");
 		String dirPath = "";
 		String fileName = "";
-		boolean ret = false;
+		//boolean ret = false;
 		CommonBooleanRespDto respDto = new CommonBooleanRespDto();
 		byte[] bs = null;
-		BaseResponse<CommonBooleanRespDto> resp = new BaseResponse<CommonBooleanRespDto>();
+		//BaseResponse<CommonBooleanRespDto> resp = new BaseResponse<CommonBooleanRespDto>();
 		if(null != voucherFile){
 			String dataPrix = "";
 	        String data = "";
@@ -326,13 +324,10 @@ public class WeChatServiceImpl implements WeChatService {
 				if(!dir.exists()){
 					dir.mkdirs();
 				}
-				//String originalFilename = file.getOriginalFilename();
 				StringBuffer fileNameBuffer = new StringBuffer();
 				fileNameBuffer.append(voucherId);
 				fileNameBuffer.append("_");
 				fileNameBuffer.append(UUID.randomUUID().toString());
-				//fileNameBuffer.append(".");
-				//fileNameBuffer.append(originalFilename.split("\\.")[1]);
 				fileNameBuffer.append(suffix);
 				fileName = fileNameBuffer.toString();
 				File targetFile = new File(dirPath + fileName.toString());
@@ -356,7 +351,7 @@ public class WeChatServiceImpl implements WeChatService {
 			//前端未传券码，开启图片识别功能
 			if(StringUtils.isBlank(voucherNo)){
 				//http://47.106.206.152/WeiXin/files/111.jpg
-				String imgUrl = DOWNLOAD_PREFIX + "voucher/" +openId +"/" +fileName;
+				//String imgUrl = DOWNLOAD_PREFIX + "voucher/" +openId +"/" +fileName;
 				GeneralBasicRespDto generalBasicRespDto = baiDuPicRecognizeUtil.recognizePicByBinaryData(bs);
 			    if(null != generalBasicRespDto){
 			    	List<WordResultDto> wordList = generalBasicRespDto.getWordsResult();
@@ -386,10 +381,8 @@ public class WeChatServiceImpl implements WeChatService {
 			respDto.setRet(false);
 			return ResponseUtil.buildResp(respDto);
 		}
-		
 	    //查询今日价格
 		SmTodayPrice todayPrice = todayPriceMapper.selectByVoucherId(voucherId);
-		
 		//创建订单
 		logger.info("create order start,openId:{}", openId);
 		SmOrder order = new SmOrder();
@@ -401,22 +394,26 @@ public class WeChatServiceImpl implements WeChatService {
 			respDto.setRet(false);
 			return ResponseUtil.buildDefinitionResp(respDto, "图片券码识别失败，请手动输入券码", ResponseCode.FAIL.getCode());
 		}
-		//TODO 优化
-		//order.setVoucherUrl(dirPath+fileName);
+		//券码路径
 		order.setVoucherUrl(DOWNLOAD_PREFIX+"voucher/"+openId+"/"+fileName);
 		order.setPrice(todayPrice.getPrice());
-		orderMapper.insertSelective(order);
+		try{
+			orderMapper.insertSelective(order);
+		}catch(Exception e){
+			logger.error("券码提交异常", e);
+			respDto.setRet(false);
+			return ResponseUtil.buildDefinitionResp(respDto, "此券码已经提交，请勿重复提交", ResponseCode.FAIL.getCode());
+		}
+		
 		logger.info("create order end,openId:{}", openId);
 		respDto.setRet(true);
 		return ResponseUtil.buildResp(respDto);
 	}
-	
-	
 
 	@Override
 	public boolean backVoucher(BackVoucherReqDto req) {
 		try{
-			orderMapper.backVoucher(req.getOpenId(), req.getVoucherNo());
+			orderMapper.backVoucher(req.getOpenId(), req.getId());
 		}catch(Exception e){
 			logger.error("back voucher error", e);
 			return false;
@@ -458,7 +455,6 @@ public class WeChatServiceImpl implements WeChatService {
 
 	@Override
 	public boolean register(RegisterUserReqDto req) {
-		
 		SmUser user = new SmUser();
 		try{
 			BeanUtils.copyProperties(req, user);
@@ -481,8 +477,7 @@ public class WeChatServiceImpl implements WeChatService {
 
 	@Override
 	public BaseResponse<AuthRespDto> auth(String code) {
-		logger.info("进入验证");
-        logger.info("code={}", code);
+        logger.info("进入验证code={}", code);
         BaseResponse<AuthRespDto> baseResp = new BaseResponse<AuthRespDto>();
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxef77eaf24420a6c6&secret=867377bf5bdf98b6edb97f6a66bb1d17&code=" + code + "&grant_type=authorization_code";
         RestTemplate restTemplate = new RestTemplate();
@@ -504,7 +499,6 @@ public class WeChatServiceImpl implements WeChatService {
 
 	@Override
 	public BaseResponse<UserInfoRespDto> getWxUserInfo(String accessToken, String openId) {
-		// TODO Auto-generated method stub
 		BaseResponse<UserInfoRespDto> baseResp = new BaseResponse<UserInfoRespDto>();
 		String url = "https://api.weixin.qq.com/sns/userinfo?access_token="+accessToken+"&openid="+openId+"&lang=zh_CN";
 		Map<String, String> headers = new HashMap<String, String>();
@@ -551,7 +545,5 @@ public class WeChatServiceImpl implements WeChatService {
 		
 		return resp;
 	}
-
-	
 	
 }

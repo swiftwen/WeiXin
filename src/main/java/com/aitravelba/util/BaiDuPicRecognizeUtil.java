@@ -2,12 +2,16 @@ package com.aitravelba.util;
 
 import java.util.HashMap;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aitravelba.dto.resp.baidu.GeneralBasicRespDto;
 import com.baidu.aip.ocr.AipOcr;
+
 
 /**
  * 百度图片识别
@@ -17,6 +21,7 @@ import com.baidu.aip.ocr.AipOcr;
 @Component
 public class BaiDuPicRecognizeUtil {
 
+	private static final Logger logger = LoggerFactory.getLogger(BaiDuPicRecognizeUtil.class);
 	@Autowired
 	private ImageEncoder imageEncoder;
 	@Autowired
@@ -37,7 +42,12 @@ public class BaiDuPicRecognizeUtil {
         client.setConnectionTimeoutInMillis(2000);
         client.setSocketTimeoutInMillis(60000);
         JSONObject res = client.basicGeneralUrl(imgUrl, new HashMap<String, String>());
-        GeneralBasicRespDto resp = com.alibaba.fastjson.JSONObject.parseObject(res.toString(2), GeneralBasicRespDto.class);
+        GeneralBasicRespDto resp = null;
+		try {
+			resp = com.alibaba.fastjson.JSONObject.parseObject(res.toString(2), GeneralBasicRespDto.class);
+		} catch (JSONException e) {
+			logger.error("baidu recognizePic error", e);
+		}
         System.out.println(resp.toString());
         return resp;
 	}
@@ -49,8 +59,13 @@ public class BaiDuPicRecognizeUtil {
         client.setSocketTimeoutInMillis(60000);
         JSONObject res = client.basicGeneral(data, new HashMap<String, String>());
         //JSONObject res = client.basicGeneralUrl(imgUrl, new HashMap<String, String>());
-        GeneralBasicRespDto resp = com.alibaba.fastjson.JSONObject.parseObject(res.toString(2), GeneralBasicRespDto.class);
-        System.out.println(resp.toString());
+        GeneralBasicRespDto resp = null;
+		try {
+			resp = com.alibaba.fastjson.JSONObject.parseObject(res.toString(2), GeneralBasicRespDto.class);
+		} catch (JSONException e) {
+			logger.error("baidu recognizePicByBinaryData error", e);
+		}
+        //System.out.println(resp.toString());
         return resp;
 	}
 	/*public String getAccessToken(){

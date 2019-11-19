@@ -58,14 +58,14 @@ public class WeiXinController extends BaseController {
     		@RequestParam(name = "timestamp", required = true) String timestamp,
     		@RequestParam(name = "nonce", required = true) String nonce,
     		@RequestParam(name = "echostr", required = false) String echostr,
-    		@RequestBody(required = false) TextMessageReqDto req) {
+    		@RequestBody(required = false) TextMessageReqDto req)throws Exception {
 		log.info("req:{}",req);
         if(StringUtils.isNotBlank(signature) && StringUtils.isNotBlank(timestamp) 
         		&& StringUtils.isNotBlank(nonce)) {
         	boolean checkApprove = WeiXinValidationUtil.checkSignature(signature,timestamp, nonce);
         	
         	if(checkApprove) {  //微信服务器接入校验
-        		log.info("校验成功");
+        		//log.info("校验成功");
         		Config config = configService.selectByConfigId(ConfigIdType.INIT_CHECK);
         		if(null == config || "0".equals(config.getConfig())){
         			return weiXinService.acceptMsg(request, response,req);
