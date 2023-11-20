@@ -18,7 +18,7 @@ public class Test {
 		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		
 		String s = "";
-		String s1 = "1";
+		String s1 = "11";
 		System.out.println(br.readLine());
 		while((s=br.readLine()) != null){
 			System.out.println(s);
