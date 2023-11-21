@@ -4,11 +4,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-/**
- * 
- * @author swiftwen
- * @date 2019年11月18日 下午2:42:26
- */
 public class Test {
 
 	public static void main(String[] args) throws Exception{
@@ -18,7 +13,7 @@ public class Test {
 		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		
 		String s = "";
-		String s1 = "11";
+		String s1 = "1123456";
 		System.out.println(br.readLine());
 		while((s=br.readLine()) != null){
 			System.out.println(s);
