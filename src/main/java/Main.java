@@ -15,7 +15,7 @@ public class Main {
     //二叉树4
 
     public static void main(String[] args) {
-        int a = 1;
+        int a = 112;
         int b = 2;
         int c = 3;
         int d = 4;
@@ -32,6 +32,21 @@ public class Main {
         int o = 15;
         int p = 16;
         int q = 17;
+        int r = 18;
+        int s = 19;
+        int t = 20;
+        int u = 21;
+        int v = 22;
+        int w = 23;
+        int x = 24;
+        
+
+
+
+
+        
+
+
 
 
 
