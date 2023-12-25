@@ -45,6 +45,9 @@ public class Main {
         int bb = 28;
         int cc = 29;
         int dd = 30;
+        int ee = 31;
+        int ff = 32;
+        int gg = 33;
         
         
 
