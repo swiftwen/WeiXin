@@ -42,6 +42,9 @@ public class Main {
         int y = 25;
         int z = 26;
         int aa = 27;
+        int bb = 28;
+        int cc = 29;
+        int dd = 30;
         
         
 
