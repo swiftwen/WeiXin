@@ -56,6 +56,17 @@ public class Main {
         int mm = 39;
         int nn = 40;
         int oo = 41;
+        int pp = 42;
+        int qq = 43;
+        int rr = 44;
+
+
+
+
+
+
+
+
 
 
 
