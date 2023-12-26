@@ -51,6 +51,12 @@ public class Main {
         int hh = 34;
         int ii = 35;
         int jj = 36;
+        int kk = 37;
+        int ll = 38;
+        int mm = 39;
+        int nn = 40;
+        int oo = 41;
+        int pp = 42;
         
         
 
