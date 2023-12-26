@@ -71,6 +71,10 @@ public class Main {
         int bbb = 54;
         int ccc = 55;
         int ddd = 56;
+        int eee = 57;
+        int fff = 58;
+        int ggg = 59;
+
 
 
 
