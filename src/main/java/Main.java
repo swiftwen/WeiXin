@@ -44,6 +44,19 @@ public class Main {
         int aa = 27;
         int bb = 28;
         int cc = 29;
+        int dd = 30;
+        int ee = 31;
+        int ff = 32;
+        int gg = 33;
+        int hh = 34;
+        int ii = 35;
+        int jj = 36;
+        int kk = 37;
+        int ll = 38;
+        int mm = 39;
+        int nn = 40;
+        int oo = 41;
+
 
 
 
