@@ -62,6 +62,16 @@ public class Main {
         int ss = 45;
         int tt = 46;
         int uu = 47;
+        int vv = 48;
+        int ww = 49;
+        int xx = 50;
+        int yy = 51;
+        int zz = 52;
+        int aaa = 53;
+        int bbb = 54;
+        int ccc = 55;
+        int ddd = 56;
+
 
 
 
