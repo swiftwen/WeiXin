@@ -29,6 +29,9 @@ public class Main {
         int l = 12;
         int m = 13;
         int n = 14;
+        int o = 15;
+        int p = 16;
+        int q = 17;
 
 
     }
