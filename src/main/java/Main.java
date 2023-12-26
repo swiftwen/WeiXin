@@ -35,6 +35,10 @@ public class Main {
         int r = 18;
         int s = 19;
         int t = 20;
+        int u = 21;
+        int v = 22;
+        int w = 23;
+
 
 
     }
