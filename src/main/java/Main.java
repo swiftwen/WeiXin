@@ -32,6 +32,9 @@ public class Main {
         int o = 15;
         int p = 16;
         int q = 17;
+        int r = 18;
+        int s = 19;
+        int t = 20;
 
 
     }
