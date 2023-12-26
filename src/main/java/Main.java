@@ -80,6 +80,9 @@ public class Main {
         int kkk = 63;
         int lll = 64;
         int mmm = 65;
+        int nnn = 66;
+        int ooo = 67;
+        int ppp = 68;
 
 
 
