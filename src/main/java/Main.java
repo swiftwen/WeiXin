@@ -59,6 +59,9 @@ public class Main {
         int pp = 42;
         int qq = 43;
         int rr = 44;
+        int ss = 45;
+        int tt = 46;
+        int uu = 47;
 
 
 
