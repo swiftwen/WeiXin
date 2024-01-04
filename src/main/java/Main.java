@@ -28,16 +28,9 @@ public class Main {
         int k = 11;
         int l = 12;
         int m = 13;
-
-
-
-
-
-
-
-        
-        
-
+        int n = 14;
+        int o = 15;
+        int p = 16;
     }
     
     
