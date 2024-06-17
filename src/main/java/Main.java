@@ -8,6 +8,9 @@ public class Main {
         System.out.println(c);
         System.out.println(a + b);
         System.out.println(a + b + c);
+        System.out.println(a + b + c + a);
+        System.out.println(a + b + c + a + b);
+
     }
 
 }
