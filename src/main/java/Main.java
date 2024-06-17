@@ -7,12 +7,6 @@ public class Main {
         int c = a + b;
         System.out.println(c);
         System.out.println(a + b);
-        System.out.println(a - b);
-        System.out.println(a * b);
-        System.out.println(a / b);
-        System.out.println(a % b);
-        System.out.println(a++);
-        System.out.println(++a);
     }
 
 }
