@@ -11,7 +11,6 @@ public class Main {
         int g = 7;
         int h = 8;
         int i = 9;
-        int j = 10;
 
 
         
